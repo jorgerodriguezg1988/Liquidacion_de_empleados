@@ -1,0 +1,114 @@
+from PySide6.QtCore import *
+from PySide6.QtWidgets import *
+from __feature__ import snake_case, true_property
+
+from styles import estilos_menu # Se hace el llamado de la hoja de estilos como en CSS
+
+
+
+class Liquidacion_de_empleados(QMainWindow): #Se crea una clase para la ventana para heredar
+    def setup_ui(self): #Se crea el metodo de la VENTANA como tal
+        self.size = QSize(1500, 900) # define el tamano de la ventana
+        self.set_window_title("Liquidacion de empleados")
+
+        self.root_layout = QVBoxLayout()
+
+        self.fr_titulo = QFrame()
+        self.fr_datos_basicos_empleados = QFrame()
+        self.fr_periodo_liquidacion = QFrame()
+        
+        self.root_layout.add_widget(self.fr_titulo, 5)
+        self.root_layout.add_widget(self.fr_datos_basicos_empleados,10)
+        self.root_layout.add_widget(self.fr_periodo_liquidacion,85)
+
+        self.widget = QWidget()
+        self.widget.set_layout(self.root_layout)
+
+        self.set_central_widget(self.widget)
+        self.style_sheet = estilos_menu
+
+        self.setup_title_frame()
+        self.setup_datos_empleado_frame()
+
+
+
+    def setup_title_frame(self):
+        self.titulo_title = QLabel("LIQUIDACION DE EMPLEADOS POR FINALIZACION DE CONTRATO", object_name="titulo_principal", alignment = Qt.AlignCenter)
+
+        self.titulo_layout = QVBoxLayout()
+        self.titulo_layout.add_widget(self.titulo_title)
+     
+        self.fr_titulo.set_layout(self.titulo_layout)
+
+        
+
+
+
+    def setup_datos_empleado_frame(self):
+        self.grid_datos_empleado = QGridLayout()
+        
+        
+        self.titulo_datos_empleado = QLabel("Digite los datos del empleado: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.nombre_label = QLabel("Nombre: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.nombre_input = QLineEdit(placeholder_text = "Nombre", alignment = Qt.AlignLeft)
+        self.cedula_label = QLabel("Cedula: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.cedula_input = QLineEdit(placeholder_text = "Cedula", alignment = Qt.AlignLeft)
+        self.cargo_label = QLabel("Cargo: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.cargo_input = QLineEdit(placeholder_text = "Cargo", alignment = Qt.AlignLeft)
+        self.tipo_retiro_label = QLabel("Tipo de retiro: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.tipo_retiro_combox = QComboBox()
+        self.tipo_retiro_combox.add_items(["Opción 1", "Opción 2", "Opción 3"])
+       
+
+
+        self.grid_datos_empleado.add_widget(self.titulo_datos_empleado, 1, 1)
+        self.grid_datos_empleado.add_widget(self.nombre_label, 2, 1)
+        self.grid_datos_empleado.add_widget(self.nombre_input, 2, 2)
+        self.grid_datos_empleado.add_widget(self.cedula_label, 2, 3)
+        self.grid_datos_empleado.add_widget(self.cedula_input, 2, 4)
+        self.grid_datos_empleado.add_widget(self.cargo_label, 3, 1)
+        self.grid_datos_empleado.add_widget(self.cargo_input, 3, 2)
+        self.grid_datos_empleado.add_widget(self.tipo_retiro_label, 3, 3)
+        self.grid_datos_empleado.add_widget(self.tipo_retiro_combox, 3, 4)
+
+
+        self.fr_datos_basicos_empleados.set_layout(self.grid_datos_empleado)
+        self.inputs_layout = QVBoxLayout()
+
+                
+
+        self.inputs_layout.add_stretch() # Relleno o push para empujar los inputs hacia el frente
+
+        self.fr_datos_basicos_empleados.set_layout(self.inputs_layout)
+        
+
+
+
+
+
+
+
+
+        
+        
+        
+
+
+
+
+
+# Ejecutar la aplicaci�n Qt
+import sys # se importa la libreria sys
+app = QApplication(sys.argv)
+
+window = Liquidacion_de_empleados() # se hace el llamado a la clase
+window.setup_ui() # se aplica el tama�o definido
+window.show() # se muestra
+
+
+
+
+
+
+# Cerrar la aplicaci�n Qt
+sys.exit(app.exec())

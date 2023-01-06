@@ -1,12 +1,14 @@
 from PySide6.QtCore import *
 from PySide6.QtWidgets import *
+from PySide6.QtGui import QPdfWriter, QPainter, QPageSize
+from PySide6.QtWidgets import QApplication
 from __feature__ import snake_case, true_property
 
 from styles import estilos_menu # Se hace el llamado de la hoja de estilos como en CSS
 
 
 
-class Liquidacion_de_empleados(QMainWindow): #Se crea una clase para la ventana para heredar
+class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana para heredar
     def setup_ui(self): #Se crea el metodo de la VENTANA como tal
         self.size = QSize(1500, 900) # define el tamano de la ventana
         self.set_window_title("Liquidacion de empleados")
@@ -29,7 +31,7 @@ class Liquidacion_de_empleados(QMainWindow): #Se crea una clase para la ventana 
 
         self.setup_title_frame()
         self.setup_datos_empleado_frame()
-
+        self.setup_crea_pdf()
 
 
     def setup_title_frame(self):
@@ -58,7 +60,7 @@ class Liquidacion_de_empleados(QMainWindow): #Se crea una clase para la ventana 
         self.tipo_retiro_label = QLabel("Tipo de retiro: ", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.tipo_retiro_combox = QComboBox()
         self.tipo_retiro_combox.add_items(["Opción 1", "Opción 2", "Opción 3"])
-       
+        self.prueba_pdf = 50
 
 
         self.grid_datos_empleado.add_widget(self.titulo_datos_empleado, 1, 1)
@@ -80,6 +82,33 @@ class Liquidacion_de_empleados(QMainWindow): #Se crea una clase para la ventana 
         self.inputs_layout.add_stretch() # Relleno o push para empujar los inputs hacia el frente
 
         self.fr_datos_basicos_empleados.set_layout(self.inputs_layout)
+
+
+
+    def setup_crea_pdf(self):    
+    
+        #app = QApplication()
+        #pdf = QPdfWriter(setup_datos_empleado_frame.prueba_pdf)
+        #pdf = QPdfWriter(f"{prueba_pdf}.pdf")
+        pdf = QPdfWriter('example.pdf')
+        pdf.set_page_size(QPageSize.Letter)
+        painter = QPainter(pdf)
+        painter.draw_text(painter.window().width()//2,
+                        painter.window().height()//2,
+                        'https://donkirkby.github.io')
+        painter.end()
+
+
+
+
+
+
+
+
+
+
+
+    
         
 
 
@@ -101,7 +130,7 @@ class Liquidacion_de_empleados(QMainWindow): #Se crea una clase para la ventana 
 import sys # se importa la libreria sys
 app = QApplication(sys.argv)
 
-window = Liquidacion_de_empleados() # se hace el llamado a la clase
+window = Liquidacion_empleados() # se hace el llamado a la clase
 window.setup_ui() # se aplica el tama�o definido
 window.show() # se muestra
 

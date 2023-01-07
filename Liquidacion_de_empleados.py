@@ -9,6 +9,9 @@ from styles import estilos_menu # Se hace el llamado de la hoja de estilos como 
 
 
 class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana para heredar
+    
+    
+
     def setup_ui(self): #Se crea el metodo de la VENTANA como tal
         self.size = QSize(1500, 900) # define el tamano de la ventana
         self.set_window_title("Liquidacion de empleados")
@@ -31,7 +34,11 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
 
         self.setup_title_frame()
         self.setup_datos_empleado_frame()
-        self.setup_crea_pdf()
+        
+        self.guardar_datos_basicos_btn.clicked.connect(self.setup_datos_empl_variable) # Se conecta el metodo para que se ejecute la accion
+        #self.setup_datos_empl_variable()
+                
+        
 
 
     def setup_title_frame(self):
@@ -51,7 +58,7 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         
         
         self.titulo_datos_empleado = QLabel("Digite los datos del empleado: ", object_name="subtitulos", alignment = Qt.AlignLeft)
-        self.nombre_label = QLabel("Nombre: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.nombre_label = QLabel("Nombre completo: ", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.nombre_input = QLineEdit(placeholder_text = "Nombre", alignment = Qt.AlignLeft)
         self.cedula_label = QLabel("Cedula: ", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.cedula_input = QLineEdit(placeholder_text = "Cedula", alignment = Qt.AlignLeft)
@@ -60,7 +67,11 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.tipo_retiro_label = QLabel("Tipo de retiro: ", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.tipo_retiro_combox = QComboBox()
         self.tipo_retiro_combox.add_items(["Opción 1", "Opción 2", "Opción 3"])
-        self.prueba_pdf = 50
+        self.guardar_datos_basicos_btn = QPushButton()
+        self.guardar_datos_basicos_btn.text = "Guardar Datos de Empleado"
+        self.guardar_datos_basicos_btn.style_sheet = "background: #2A88C1"
+        
+        
 
 
         self.grid_datos_empleado.add_widget(self.titulo_datos_empleado, 1, 1)
@@ -72,6 +83,7 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.grid_datos_empleado.add_widget(self.cargo_input, 3, 2)
         self.grid_datos_empleado.add_widget(self.tipo_retiro_label, 3, 3)
         self.grid_datos_empleado.add_widget(self.tipo_retiro_combox, 3, 4)
+        self.grid_datos_empleado.add_widget(self.guardar_datos_basicos_btn, 3, 5)
 
 
         self.fr_datos_basicos_empleados.set_layout(self.grid_datos_empleado)
@@ -90,14 +102,27 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         #app = QApplication()
         #pdf = QPdfWriter(setup_datos_empleado_frame.prueba_pdf)
         #pdf = QPdfWriter(f"{prueba_pdf}.pdf")
-        pdf = QPdfWriter('example.pdf')
+        pdf = QPdfWriter(f"Liquidacion de {self.variable_nombre}.pdf")
         pdf.set_page_size(QPageSize.Letter)
         painter = QPainter(pdf)
-        painter.draw_text(painter.window().width()//2,
-                        painter.window().height()//2,
-                        'https://donkirkby.github.io')
+        painter.draw_text(4000, 1000, "RESULTADO DE LA LIQUIDACION")
+        painter.draw_text(800, 1300, "DATOS DEL EMPLEADO: ")
+        painter.draw_text(800, 1800, f"NOMBRE:          {self.variable_nombre}")
+        painter.draw_text(2000, 1800, f"DOCUMENTO:       {self.variable_cedula}")
+        painter.draw_text(800, 2500, f"CARGO:       {self.variable_cargo}")
+        painter.draw_text(2000, 2500, f"MOTIVO DE RETIRO:       {{self.variable_retiro}}")
+        #painter.window().width()//2,
+        #painter.window().height()//2,
         painter.end()
 
+    def setup_datos_empl_variable(self):
+        
+        #self.guardar_datos_basicos_btn.clicked.connect(self.setup_datos_empl_variable) # Se conecta el metodo para que se ejecute la accion
+        self.variable_nombre = self.nombre_input.text
+        self.variable_cedula = self.cedula_input.text
+        self.variable_cargo = self.cargo_input.text
+        #self.variable_retiro = self.tipo_retiro_combox.text
+        self.setup_crea_pdf()
 
 
 
@@ -126,12 +151,12 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
 
 
 
-# Ejecutar la aplicaci�n Qt
+# Ejecutar la aplicacion Qt
 import sys # se importa la libreria sys
 app = QApplication(sys.argv)
 
 window = Liquidacion_empleados() # se hace el llamado a la clase
-window.setup_ui() # se aplica el tama�o definido
+window.setup_ui() # se aplica el tamano definido
 window.show() # se muestra
 
 
@@ -139,5 +164,5 @@ window.show() # se muestra
 
 
 
-# Cerrar la aplicaci�n Qt
+# Cerrar la aplicacion Qt
 sys.exit(app.exec())

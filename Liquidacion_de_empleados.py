@@ -66,7 +66,7 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.cargo_input = QLineEdit(placeholder_text = "Cargo", alignment = Qt.AlignLeft)
         self.tipo_retiro_label = QLabel("Tipo de retiro: ", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.tipo_retiro_combox = QComboBox()
-        self.tipo_retiro_combox.add_items(["Opción 1", "Opción 2", "Opción 3"])
+        self.tipo_retiro_combox.add_items(["Retiro Voluntario", "Terminacion de contrato con justa causa", "Abandono de puesto"])
         self.guardar_datos_basicos_btn = QPushButton()
         self.guardar_datos_basicos_btn.text = "Guardar Datos de Empleado"
         self.guardar_datos_basicos_btn.style_sheet = "background: #2A88C1"
@@ -106,11 +106,12 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         pdf.set_page_size(QPageSize.Letter)
         painter = QPainter(pdf)
         painter.draw_text(4000, 1000, "RESULTADO DE LA LIQUIDACION")
-        painter.draw_text(800, 1300, "DATOS DEL EMPLEADO: ")
-        painter.draw_text(800, 1800, f"NOMBRE:          {self.variable_nombre}")
-        painter.draw_text(2000, 1800, f"DOCUMENTO:       {self.variable_cedula}")
-        painter.draw_text(800, 2500, f"CARGO:       {self.variable_cargo}")
-        painter.draw_text(2000, 2500, f"MOTIVO DE RETIRO:       {{self.variable_retiro}}")
+        painter.draw_text(0, 1200, "_____________________________________________________________________________________________________________________________________________________________")
+        painter.draw_text(800, 1500, "DATOS DEL EMPLEADO: ")
+        painter.draw_text(800, 1900, f"NOMBRE:      {self.variable_nombre}")
+        painter.draw_text(5500, 1900, f"DOCUMENTO:               {self.variable_cedula}")
+        painter.draw_text(800, 2200, f"CARGO:        {self.variable_cargo}")
+        painter.draw_text(5500, 2200, f"MOTIVO DE RETIRO:       {self.variable_retiro}")
         #painter.window().width()//2,
         #painter.window().height()//2,
         painter.end()
@@ -121,7 +122,7 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.variable_nombre = self.nombre_input.text
         self.variable_cedula = self.cedula_input.text
         self.variable_cargo = self.cargo_input.text
-        #self.variable_retiro = self.tipo_retiro_combox.text
+        self.variable_retiro = self.tipo_retiro_combox.current_text
         self.setup_crea_pdf()
 
 

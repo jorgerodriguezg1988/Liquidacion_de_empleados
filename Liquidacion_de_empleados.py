@@ -3,15 +3,13 @@ from PySide6.QtWidgets import *
 from PySide6.QtGui import QPdfWriter, QPainter, QPageSize
 from PySide6.QtWidgets import QApplication
 from __feature__ import snake_case, true_property
+from datetime import datetime, date, time, timedelta
+import calendar
 
 from styles import estilos_menu # Se hace el llamado de la hoja de estilos como en CSS
 
-
-
 class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana para heredar
     
-    
-
     def setup_ui(self): #Se crea el metodo de la VENTANA como tal
         self.size = QSize(1500, 900) # define el tamano de la ventana
         self.set_window_title("Liquidacion de empleados")
@@ -21,10 +19,13 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.fr_titulo = QFrame()
         self.fr_datos_basicos_empleados = QFrame()
         self.fr_periodo_liquidacion = QFrame()
+        self.fr_siguiente_frame = QFrame()
         
         self.root_layout.add_widget(self.fr_titulo, 5)
         self.root_layout.add_widget(self.fr_datos_basicos_empleados,10)
-        self.root_layout.add_widget(self.fr_periodo_liquidacion,85)
+        self.root_layout.add_widget(self.fr_periodo_liquidacion,10)
+        self.root_layout.add_widget(self.fr_siguiente_frame,75)
+
 
         self.widget = QWidget()
         self.widget.set_layout(self.root_layout)
@@ -34,6 +35,7 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
 
         self.setup_title_frame()
         self.setup_datos_empleado_frame()
+        self.setup_datos_liquidacion_frame()
         
         self.guardar_datos_basicos_btn.clicked.connect(self.setup_datos_empl_variable) # Se conecta el metodo para que se ejecute la accion
         #self.setup_datos_empl_variable()
@@ -49,13 +51,8 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
      
         self.fr_titulo.set_layout(self.titulo_layout)
 
-        
-
-
-
     def setup_datos_empleado_frame(self):
         self.grid_datos_empleado = QGridLayout()
-        
         
         self.titulo_datos_empleado = QLabel("Digite los datos del empleado: ", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.nombre_label = QLabel("Nombre completo: ", object_name="subtitulos", alignment = Qt.AlignLeft)
@@ -70,9 +67,6 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.guardar_datos_basicos_btn = QPushButton()
         self.guardar_datos_basicos_btn.text = "Guardar Datos de Empleado"
         self.guardar_datos_basicos_btn.style_sheet = "background: #2A88C1"
-        
-        
-
 
         self.grid_datos_empleado.add_widget(self.titulo_datos_empleado, 1, 1)
         self.grid_datos_empleado.add_widget(self.nombre_label, 2, 1)
@@ -85,23 +79,30 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.grid_datos_empleado.add_widget(self.tipo_retiro_combox, 3, 4)
         self.grid_datos_empleado.add_widget(self.guardar_datos_basicos_btn, 3, 5)
 
-
         self.fr_datos_basicos_empleados.set_layout(self.grid_datos_empleado)
-        self.inputs_layout = QVBoxLayout()
+        self.inputs_empleado_layout = QVBoxLayout()
+        self.inputs_empleado_layout.add_stretch() # Relleno o push para empujar los inputs hacia el frente
+        
+        self.fr_datos_basicos_empleados.set_layout(self.inputs_empleado_layout)
 
-                
+    def setup_datos_liquidacion_frame(self):
+        self.grid_datos_liquidacion = QGridLayout()
+        
+        self.titulo_datos_liquidacion = QLabel("Digite las fechas y datos solicitados: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.fecha_ini_label = QLabel("Nombre completo: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.fecha_ini_input = QLineEdit(placeholder_text = "Nombre", alignment = Qt.AlignLeft)
 
-        self.inputs_layout.add_stretch() # Relleno o push para empujar los inputs hacia el frente
+        self.grid_datos_liquidacion.add_widget(self.titulo_datos_liquidacion, 1, 1)
+        self.grid_datos_liquidacion.add_widget(self.fecha_ini_label, 2, 1)
+        self.grid_datos_liquidacion.add_widget(self.fecha_ini_input, 2, 2)
 
-        self.fr_datos_basicos_empleados.set_layout(self.inputs_layout)
 
-
+        self.fr_periodo_liquidacion.set_layout(self.grid_datos_liquidacion)
+        self.inputs_liquidacion_layout = QVBoxLayout()
+        self.inputs_liquidacion_layout.add_stretch()
 
     def setup_crea_pdf(self):    
     
-        #app = QApplication()
-        #pdf = QPdfWriter(setup_datos_empleado_frame.prueba_pdf)
-        #pdf = QPdfWriter(f"{prueba_pdf}.pdf")
         pdf = QPdfWriter(f"Liquidacion de {self.variable_nombre}.pdf")
         pdf.set_page_size(QPageSize.Letter)
         painter = QPainter(pdf)
@@ -123,7 +124,7 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.variable_cedula = self.cedula_input.text
         self.variable_cargo = self.cargo_input.text
         self.variable_retiro = self.tipo_retiro_combox.current_text
-        self.setup_crea_pdf()
+        #self.setup_crea_pdf()
 
 
 

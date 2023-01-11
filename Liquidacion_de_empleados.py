@@ -18,12 +18,12 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
 
         self.fr_titulo = QFrame()
         self.fr_datos_basicos_empleados = QFrame()
-        self.fr_periodo_liquidacion = QFrame()
+        #self.fr_periodo_liquidacion = QFrame()
         self.fr_siguiente_frame = QFrame()
         
         self.root_layout.add_widget(self.fr_titulo, 5)
-        self.root_layout.add_widget(self.fr_datos_basicos_empleados,10)
-        self.root_layout.add_widget(self.fr_periodo_liquidacion,10)
+        self.root_layout.add_widget(self.fr_datos_basicos_empleados,20)
+        #self.root_layout.add_widget(self.fr_periodo_liquidacion,10)
         self.root_layout.add_widget(self.fr_siguiente_frame,75)
 
 
@@ -35,9 +35,12 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
 
         self.setup_title_frame()
         self.setup_datos_empleado_frame()
-        self.setup_datos_liquidacion_frame()
+        #self.setup_datos_liquidacion_frame()
         
+        self.guardar_datos_basicos_btn.clicked.connect(self.setup_fechas_en_formato) # Se conecta el metodo para que se ejecute la accion
         self.guardar_datos_basicos_btn.clicked.connect(self.setup_datos_empl_variable) # Se conecta el metodo para que se ejecute la accion
+        
+        #self.setup_fechas_en_formato()
         #self.setup_datos_empl_variable()
                 
         
@@ -64,9 +67,21 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.tipo_retiro_label = QLabel("Tipo de retiro: ", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.tipo_retiro_combox = QComboBox()
         self.tipo_retiro_combox.add_items(["Retiro Voluntario", "Terminacion de contrato con justa causa", "Abandono de puesto"])
+        self.fecha_ini_label = QLabel("Fecha inicio contrato: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.fecha_ini_input = QLineEdit(placeholder_text = "dd-mm-aaaa", alignment = Qt.AlignLeft)
+        self.fecha_fin_label = QLabel("Fecha final contrato: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.fecha_fin_input = QLineEdit(placeholder_text = "dd-mm-aaaa",alignment = Qt.AlignLeft)
+        self.salario_base_label = QLabel("Salario base del empleado: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.salario_base_input = QLineEdit(placeholder_text = "Valor sin puntos ni comas", alignment = Qt.AlignLeft)
+        self.auxilio_trans_label = QLabel("Auxilio de transporte: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.auxilio_trans_input = QLineEdit(placeholder_text = "Valor sin puntos ni comas", alignment = Qt.AlignLeft)
+        self.dias_trabajados_label = QLabel(self.diferencia, object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.dias_trabajados_label.hide()
         self.guardar_datos_basicos_btn = QPushButton()
-        self.guardar_datos_basicos_btn.text = "Guardar Datos de Empleado"
+        self.guardar_datos_basicos_btn.text = "Guardar Datos"
         self.guardar_datos_basicos_btn.style_sheet = "background: #2A88C1"
+
+        
 
         self.grid_datos_empleado.add_widget(self.titulo_datos_empleado, 1, 1)
         self.grid_datos_empleado.add_widget(self.nombre_label, 2, 1)
@@ -77,7 +92,16 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.grid_datos_empleado.add_widget(self.cargo_input, 3, 2)
         self.grid_datos_empleado.add_widget(self.tipo_retiro_label, 3, 3)
         self.grid_datos_empleado.add_widget(self.tipo_retiro_combox, 3, 4)
-        self.grid_datos_empleado.add_widget(self.guardar_datos_basicos_btn, 3, 5)
+        self.grid_datos_empleado.add_widget(self.fecha_ini_label, 4, 1)
+        self.grid_datos_empleado.add_widget(self.fecha_ini_input, 4, 2)
+        self.grid_datos_empleado.add_widget(self.fecha_fin_label, 4, 3)
+        self.grid_datos_empleado.add_widget(self.fecha_fin_input, 4, 4)
+        self.grid_datos_empleado.add_widget(self.salario_base_label, 5, 1)
+        self.grid_datos_empleado.add_widget(self.salario_base_input, 5, 2)
+        self.grid_datos_empleado.add_widget(self.auxilio_trans_label, 5, 3)
+        self.grid_datos_empleado.add_widget(self.auxilio_trans_input, 5, 4)
+        self.grid_datos_empleado.add_widget(self.dias_trabajados_label, 5, 5)
+        self.grid_datos_empleado.add_widget(self.guardar_datos_basicos_btn, 5, 6)
 
         self.fr_datos_basicos_empleados.set_layout(self.grid_datos_empleado)
         self.inputs_empleado_layout = QVBoxLayout()
@@ -85,48 +109,81 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         
         self.fr_datos_basicos_empleados.set_layout(self.inputs_empleado_layout)
 
+        """
     def setup_datos_liquidacion_frame(self):
         self.grid_datos_liquidacion = QGridLayout()
         
         self.titulo_datos_liquidacion = QLabel("Digite las fechas y datos solicitados: ", object_name="subtitulos", alignment = Qt.AlignLeft)
-        self.fecha_ini_label = QLabel("Nombre completo: ", object_name="subtitulos", alignment = Qt.AlignLeft)
-        self.fecha_ini_input = QLineEdit(placeholder_text = "Nombre", alignment = Qt.AlignLeft)
+        self.fecha_ini_label = QLabel("Fecha inicio de contrato: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.fecha_ini_input = QLineEdit(placeholder_text = "dd-mm-aaaa", alignment = Qt.AlignLeft)
 
         self.grid_datos_liquidacion.add_widget(self.titulo_datos_liquidacion, 1, 1)
         self.grid_datos_liquidacion.add_widget(self.fecha_ini_label, 2, 1)
         self.grid_datos_liquidacion.add_widget(self.fecha_ini_input, 2, 2)
 
+        
+
 
         self.fr_periodo_liquidacion.set_layout(self.grid_datos_liquidacion)
         self.inputs_liquidacion_layout = QVBoxLayout()
         self.inputs_liquidacion_layout.add_stretch()
+        """
+
 
     def setup_crea_pdf(self):    
     
-        pdf = QPdfWriter(f"Liquidacion de {self.variable_nombre}.pdf")
+        pdf = QPdfWriter(f"Liquidacion de {self.nombre_input.text}.pdf")
         pdf.set_page_size(QPageSize.Letter)
         painter = QPainter(pdf)
         painter.draw_text(4000, 1000, "RESULTADO DE LA LIQUIDACION")
         painter.draw_text(0, 1200, "_____________________________________________________________________________________________________________________________________________________________")
         painter.draw_text(800, 1500, "DATOS DEL EMPLEADO: ")
-        painter.draw_text(800, 1900, f"NOMBRE:      {self.variable_nombre}")
-        painter.draw_text(5500, 1900, f"DOCUMENTO:               {self.variable_cedula}")
-        painter.draw_text(800, 2200, f"CARGO:        {self.variable_cargo}")
-        painter.draw_text(5500, 2200, f"MOTIVO DE RETIRO:       {self.variable_retiro}")
+        painter.draw_text(800, 1900, f"NOMBRE:      {self.nombre_input.text}")
+        painter.draw_text(5500, 1900, f"DOCUMENTO:               {self.cedula_input.text}")
+        painter.draw_text(800, 2200, f"CARGO:        {self.cargo_input.text}")
+        painter.draw_text(5500, 2200, f"MOTIVO DE RETIRO:       {self.tipo_retiro_combox.current_text}")
+        painter.draw_text(800, 2500, f"FECHA INICIO DE CONTRATO:        {self.fecha_ini_input.text}")
+        painter.draw_text(5500, 2500, f"FECHA FIN DE CONTRATO:       {self.fecha_fin_input.text}")
+        painter.draw_text(800, 2800, f"SALARIO BASE DEL EMPLEADO:        $ {self.salario_base_input.text}")
+        painter.draw_text(5500, 2800, f"AUXILIO DE TRANSPORTE:       $ {self.auxilio_trans_input.text}")
         #painter.window().width()//2,
         #painter.window().height()//2,
         painter.end()
 
     def setup_datos_empl_variable(self):
-        
-        #self.guardar_datos_basicos_btn.clicked.connect(self.setup_datos_empl_variable) # Se conecta el metodo para que se ejecute la accion
+        """
+        self.guardar_datos_basicos_btn.clicked.connect(self.setup_datos_empl_variable) # Se conecta el metodo para que se ejecute la accion
         self.variable_nombre = self.nombre_input.text
         self.variable_cedula = self.cedula_input.text
         self.variable_cargo = self.cargo_input.text
         self.variable_retiro = self.tipo_retiro_combox.current_text
+        self.variable_fecha_ini = self.fecha_ini_input.text
+        self.variable_fecha_fin = self.fecha_fin_input.text
+        self.variable_salario_base = self.salario_base_input.text
+        self.variable_auxilio_trans = self.auxilio_trans_input.text
+        """
         #self.setup_crea_pdf()
 
+    def setup_fechas_en_formato(self):
+        
+        self.formato_fecha = "%d-%m-%Y"
+        self.variable_fecha_ini = datetime.strptime(self.fecha_ini_input.text, self.formato_fecha)
+        self.variable_fecha_fin = datetime.strptime(self.fecha_fin_input.text, self.formato_fecha)
+        self.diferencia = self.variable_fecha_fin - self.variable_fecha_ini
+        
+        if self.diferencia.days > 0:
+            self.dias_trabajados_label.show()
+        else:
+            self.setup_warning()
+            
+            
 
+            
+        
+        
+
+    def setup_warning(self):
+        dialogo = QMessageBox.warning(self, "Error en escritura de fechas", "La fecha inicial no puede ser mayor que la fecha final")
 
 
 

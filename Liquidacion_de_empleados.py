@@ -75,7 +75,8 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.salario_base_input = QLineEdit(placeholder_text = "Valor sin puntos ni comas", alignment = Qt.AlignLeft)
         self.auxilio_trans_label = QLabel("Auxilio de transporte: ", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.auxilio_trans_input = QLineEdit(placeholder_text = "Valor sin puntos ni comas", alignment = Qt.AlignLeft)
-        self.dias_trabajados_label = QLabel(self.diferencia, object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.titulo_dias_trabajados_label = QLabel("Total dias trabajados: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.dias_trabajados_label = QLabel("Prueba", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.dias_trabajados_label.hide()
         self.guardar_datos_basicos_btn = QPushButton()
         self.guardar_datos_basicos_btn.text = "Guardar Datos"
@@ -100,8 +101,9 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.grid_datos_empleado.add_widget(self.salario_base_input, 5, 2)
         self.grid_datos_empleado.add_widget(self.auxilio_trans_label, 5, 3)
         self.grid_datos_empleado.add_widget(self.auxilio_trans_input, 5, 4)
-        self.grid_datos_empleado.add_widget(self.dias_trabajados_label, 5, 5)
-        self.grid_datos_empleado.add_widget(self.guardar_datos_basicos_btn, 5, 6)
+        self.grid_datos_empleado.add_widget(self.titulo_dias_trabajados_label, 6, 1)
+        self.grid_datos_empleado.add_widget(self.dias_trabajados_label, 6, 2)
+        self.grid_datos_empleado.add_widget(self.guardar_datos_basicos_btn, 6, 6)
 
         self.fr_datos_basicos_empleados.set_layout(self.grid_datos_empleado)
         self.inputs_empleado_layout = QVBoxLayout()
@@ -116,14 +118,10 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.titulo_datos_liquidacion = QLabel("Digite las fechas y datos solicitados: ", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.fecha_ini_label = QLabel("Fecha inicio de contrato: ", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.fecha_ini_input = QLineEdit(placeholder_text = "dd-mm-aaaa", alignment = Qt.AlignLeft)
-
         self.grid_datos_liquidacion.add_widget(self.titulo_datos_liquidacion, 1, 1)
         self.grid_datos_liquidacion.add_widget(self.fecha_ini_label, 2, 1)
         self.grid_datos_liquidacion.add_widget(self.fecha_ini_input, 2, 2)
-
         
-
-
         self.fr_periodo_liquidacion.set_layout(self.grid_datos_liquidacion)
         self.inputs_liquidacion_layout = QVBoxLayout()
         self.inputs_liquidacion_layout.add_stretch()
@@ -172,7 +170,10 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.diferencia = self.variable_fecha_fin - self.variable_fecha_ini
         
         if self.diferencia.days > 0:
+            
             self.dias_trabajados_label.show()
+            self.dias_trabajados_label.set_text(f"{self.diferencia.days}")
+            
         else:
             self.setup_warning()
             

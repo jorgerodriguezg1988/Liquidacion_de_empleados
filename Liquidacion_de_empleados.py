@@ -18,13 +18,13 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
 
         self.fr_titulo = QFrame()
         self.fr_datos_basicos_empleados = QFrame()
-        #self.fr_periodo_liquidacion = QFrame()
+        self.fr_conceptos_a_pagar = QFrame()
         self.fr_siguiente_frame = QFrame()
         
         self.root_layout.add_widget(self.fr_titulo, 5)
         self.root_layout.add_widget(self.fr_datos_basicos_empleados,20)
-        #self.root_layout.add_widget(self.fr_periodo_liquidacion,10)
-        self.root_layout.add_widget(self.fr_siguiente_frame,75)
+        self.root_layout.add_widget(self.fr_conceptos_a_pagar,50)
+        self.root_layout.add_widget(self.fr_siguiente_frame,25)
 
 
         self.widget = QWidget()
@@ -35,12 +35,16 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
 
         self.setup_title_frame()
         self.setup_datos_empleado_frame()
-        #self.setup_datos_liquidacion_frame()
         
-        self.guardar_datos_basicos_btn.clicked.connect(self.setup_fechas_en_formato) # Se conecta el metodo para que se ejecute la accion
+        
+        self.guardar_datos_basicos_btn.clicked.connect(self.setup_total_dias_contrato) # Se conecta el metodo para que se ejecute la accion
         self.guardar_datos_basicos_btn.clicked.connect(self.setup_datos_empl_variable) # Se conecta el metodo para que se ejecute la accion
+        self.guardar_datos_basicos_btn.clicked.connect(self.setup_conceptos_a_pagar_frame) # Se conecta el metodo para que se ejecute la accion
         
-        #self.setup_fechas_en_formato()
+
+
+
+        
         #self.setup_datos_empl_variable()
                 
         
@@ -76,7 +80,7 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.auxilio_trans_label = QLabel("Auxilio de transporte: ", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.auxilio_trans_input = QLineEdit(placeholder_text = "Valor sin puntos ni comas", alignment = Qt.AlignLeft)
         self.titulo_dias_trabajados_label = QLabel("Total dias trabajados: ", object_name="subtitulos", alignment = Qt.AlignLeft)
-        self.dias_trabajados_label = QLabel("Prueba", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.dias_trabajados_label = QLabel("", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.dias_trabajados_label.hide()
         self.guardar_datos_basicos_btn = QPushButton()
         self.guardar_datos_basicos_btn.text = "Guardar Datos"
@@ -111,21 +115,83 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         
         self.fr_datos_basicos_empleados.set_layout(self.inputs_empleado_layout)
 
-        """
-    def setup_datos_liquidacion_frame(self):
-        self.grid_datos_liquidacion = QGridLayout()
         
-        self.titulo_datos_liquidacion = QLabel("Digite las fechas y datos solicitados: ", object_name="subtitulos", alignment = Qt.AlignLeft)
-        self.fecha_ini_label = QLabel("Fecha inicio de contrato: ", object_name="subtitulos", alignment = Qt.AlignLeft)
-        self.fecha_ini_input = QLineEdit(placeholder_text = "dd-mm-aaaa", alignment = Qt.AlignLeft)
-        self.grid_datos_liquidacion.add_widget(self.titulo_datos_liquidacion, 1, 1)
-        self.grid_datos_liquidacion.add_widget(self.fecha_ini_label, 2, 1)
-        self.grid_datos_liquidacion.add_widget(self.fecha_ini_input, 2, 2)
+    def setup_conceptos_a_pagar_frame(self):
+        self.grid_conceptos_a_pagar = QGridLayout()
         
-        self.fr_periodo_liquidacion.set_layout(self.grid_datos_liquidacion)
-        self.inputs_liquidacion_layout = QVBoxLayout()
-        self.inputs_liquidacion_layout.add_stretch()
-        """
+        self.titulo_conceptos_a_pagar = QLabel("Conceptos a pagar: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.fecha_ini_salario_pend_label = QLabel("Fecha inicio de ultimo salario: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.fecha_ini_salario_pend_input = QLineEdit(placeholder_text = "dd-mm-aaaa", alignment = Qt.AlignLeft)
+        self.fecha_fin_salario_pend_label = QLabel("Fecha final de ultimo salario: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.fecha_fin_salario_pend_input = QLineEdit(placeholder_text = "dd-mm-aaaa", alignment = Qt.AlignLeft)
+        self.titulo_dias_pendientes_salario = QLabel("Total dias del ultimo salario: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.dias_pendientes_salario_label = QLabel("", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.dias_pendientes_salario_label.hide()
+        self.titulo_dias_pendientes_auxilio = QLabel("Auxilio de transporte por dias del ultimo salario: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.dias_pendientes_auxilio_label = QLabel("", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.dias_pendientes_auxilio_label.hide()
+        self.dias_sancion_label = QLabel("Dias de sanción: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.dias_sancion_input = QLineEdit(placeholder_text = "Cantidad de dias de sancion", alignment = Qt.AlignLeft)
+        self.fecha_ini_prima_label = QLabel("Fecha inicio de periodo para prima: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.fecha_ini_prima_input = QLineEdit(placeholder_text = "dd-mm-aaaa", alignment = Qt.AlignLeft)
+        self.fecha_fin_prima_label = QLabel("Fecha final de periodo para prima: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.fecha_fin_prima_input = QLineEdit(placeholder_text = "dd-mm-aaaa", alignment = Qt.AlignLeft)
+        self.titulo_dias_pendientes_prima = QLabel("Total dias a pagar por prima: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.dias_pendientes_prima_label = QLabel("", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.dias_pendientes_prima_label.hide()
+        self.fecha_ini_cesantias_label = QLabel("Fecha inicio de periodo para cesatias: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.fecha_ini_cesantias_input = QLineEdit(placeholder_text = "dd-mm-aaaa", alignment = Qt.AlignLeft)
+        self.fecha_fin_cesantias_label = QLabel("Fecha final de periodo para cesantias: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.fecha_fin_cesantias_input = QLineEdit(placeholder_text = "dd-mm-aaaa", alignment = Qt.AlignLeft)
+        self.titulo_dias_pendientes_cesantias = QLabel("Total dias a pagar por cesantias: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.dias_pendientes_cesantias_label = QLabel("", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.dias_pendientes_cesantias_label.hide()
+        self.titulo_dias_total_vacaciones_label = QLabel("Total dias de vacaciones: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.dias_total_vacaciones_label = QLabel("", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.titulo_dias_usados_vacaciones_label = QLabel("Dias de vacaciones disfrutados: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.dias_usados_vacaciones_input = QLineEdit(placeholder_text = "Cantidad de dias de vacaciones disfrutados", alignment = Qt.AlignLeft)
+        self.titulo_dias_pendientes_vacaciones_label = QLabel("Dias de vacaciones pendientes: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.dias_pendientes_vacaciones_label = QLabel("", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.dias_pendientes_vacaciones_label.hide()
+        self.generar_calculos_btn = QPushButton()
+        self.generar_calculos_btn.text = "Generar Calculos"
+        self.generar_calculos_btn.style_sheet = "background: #2A88C1"
+        
+        self.grid_conceptos_a_pagar.add_widget(self.titulo_conceptos_a_pagar, 1, 1)
+        self.grid_conceptos_a_pagar.add_widget(self.fecha_ini_salario_pend_label, 2, 1)
+        self.grid_conceptos_a_pagar.add_widget(self.fecha_ini_salario_pend_input, 2, 2)
+        self.grid_conceptos_a_pagar.add_widget(self.fecha_fin_salario_pend_label, 2, 3)
+        self.grid_conceptos_a_pagar.add_widget(self.fecha_fin_salario_pend_input, 2, 4)
+        self.grid_conceptos_a_pagar.add_widget(self.titulo_dias_pendientes_salario, 2, 5)
+        self.grid_conceptos_a_pagar.add_widget(self.dias_pendientes_salario_label, 2, 6)
+        self.grid_conceptos_a_pagar.add_widget(self.titulo_dias_pendientes_auxilio, 3, 5)
+        self.grid_conceptos_a_pagar.add_widget(self.dias_pendientes_auxilio_label, 3, 6)
+        self.grid_conceptos_a_pagar.add_widget(self.dias_sancion_label, 4, 5)
+        self.grid_conceptos_a_pagar.add_widget(self.dias_sancion_input, 4, 6)
+        self.grid_conceptos_a_pagar.add_widget(self.fecha_ini_prima_label, 5, 1)
+        self.grid_conceptos_a_pagar.add_widget(self.fecha_ini_prima_input, 5, 2)
+        self.grid_conceptos_a_pagar.add_widget(self.fecha_fin_prima_label, 5, 3)
+        self.grid_conceptos_a_pagar.add_widget(self.fecha_fin_prima_input, 5, 4)
+        self.grid_conceptos_a_pagar.add_widget(self.titulo_dias_pendientes_prima, 5, 5)
+        self.grid_conceptos_a_pagar.add_widget(self.dias_pendientes_prima_label, 5, 6)
+        self.grid_conceptos_a_pagar.add_widget(self.fecha_ini_cesantias_label, 6, 1)
+        self.grid_conceptos_a_pagar.add_widget(self.fecha_ini_cesantias_input, 6, 2)
+        self.grid_conceptos_a_pagar.add_widget(self.fecha_fin_cesantias_label, 6, 3)
+        self.grid_conceptos_a_pagar.add_widget(self.fecha_fin_cesantias_input, 6, 4)
+        self.grid_conceptos_a_pagar.add_widget(self.titulo_dias_pendientes_cesantias, 6, 5)
+        self.grid_conceptos_a_pagar.add_widget(self.dias_pendientes_cesantias_label, 6, 6)
+        self.grid_conceptos_a_pagar.add_widget(self.titulo_dias_total_vacaciones_label, 7, 1)
+        self.grid_conceptos_a_pagar.add_widget(self.dias_total_vacaciones_label, 7, 2)
+        self.grid_conceptos_a_pagar.add_widget(self.titulo_dias_usados_vacaciones_label, 7, 3)
+        self.grid_conceptos_a_pagar.add_widget(self.dias_usados_vacaciones_input, 7, 4)
+        self.grid_conceptos_a_pagar.add_widget(self.titulo_dias_pendientes_vacaciones_label, 7, 5)
+        self.grid_conceptos_a_pagar.add_widget(self.dias_pendientes_vacaciones_label, 7, 6)
+        self.grid_conceptos_a_pagar.add_widget(self.generar_calculos_btn, 8, 6)
+        
+        self.fr_conceptos_a_pagar.set_layout(self.grid_conceptos_a_pagar)
+        self.inputs_conceptos_a_pagar_layout = QVBoxLayout()
+        self.inputs_conceptos_a_pagar_layout.add_stretch()
+        
 
 
     def setup_crea_pdf(self):    
@@ -162,32 +228,27 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         """
         #self.setup_crea_pdf()
 
-    def setup_fechas_en_formato(self):
+    def setup_total_dias_contrato(self):
         
         self.formato_fecha = "%d-%m-%Y"
-        self.variable_fecha_ini = datetime.strptime(self.fecha_ini_input.text, self.formato_fecha)
-        self.variable_fecha_fin = datetime.strptime(self.fecha_fin_input.text, self.formato_fecha)
-        self.diferencia = self.variable_fecha_fin - self.variable_fecha_ini
+        self.variable_fecha_ini_contrato = datetime.strptime(self.fecha_ini_input.text, self.formato_fecha)
+        self.variable_fecha_fin_contrato = datetime.strptime(self.fecha_fin_input.text, self.formato_fecha)
+        self.dias_total_contrato = self.variable_fecha_fin_contrato - self.variable_fecha_ini_contrato
         
-        if self.diferencia.days > 0:
+        if self.dias_total_contrato.days > 0:
             
             self.dias_trabajados_label.show()
-            self.dias_trabajados_label.set_text(f"{self.diferencia.days}")
+            self.dias_trabajados_label.set_text(f"{self.dias_total_contrato.days}")
             
         else:
             self.setup_warning()
             
-            
-
-            
-        
-        
-
+    
     def setup_warning(self):
         dialogo = QMessageBox.warning(self, "Error en escritura de fechas", "La fecha inicial no puede ser mayor que la fecha final")
 
 
-
+    
 
 
 

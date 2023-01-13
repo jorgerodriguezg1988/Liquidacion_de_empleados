@@ -53,6 +53,20 @@ estilos_menu = estilos_generales +'''
         padding: 10px;
     }
 
+    QMessageBox {
+        background-color: #D5DBDB;
+}
+
+    QMessageBox QLabel {
+        background-color: #D5DBDB;    
+        color: #1A5276;
+}
+
+    QMessageBox QPushButton {
+        background-color: #2A88C1;
+        color: black;
+}
+
 
     
 

@@ -1,6 +1,6 @@
 from PySide6.QtCore import *
 from PySide6.QtWidgets import *
-from PySide6.QtGui import QPdfWriter, QPainter, QPageSize
+from PySide6.QtGui import QPdfWriter, QPainter, QPageSize, QIntValidator
 from PySide6.QtWidgets import QApplication
 from __feature__ import snake_case, true_property
 from datetime import datetime, date, time, timedelta
@@ -35,13 +35,13 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
 
         self.setup_title_frame()
         self.setup_datos_empleado_frame()
+        self.setup_conceptos_a_pagar_frame()
         
         
         self.guardar_datos_basicos_btn.clicked.connect(self.setup_total_dias_contrato) # Se conecta el metodo para que se ejecute la accion
         self.guardar_datos_basicos_btn.clicked.connect(self.setup_datos_empl_variable) # Se conecta el metodo para que se ejecute la accion
-        self.guardar_datos_basicos_btn.clicked.connect(self.setup_conceptos_a_pagar_frame) # Se conecta el metodo para que se ejecute la accion
+        self.generar_calculos_btn.clicked.connect(self.setup_calculos_conceptos_a_pagar) # Se conecta el metodo para que se ejecute la accion
         
-
 
 
         
@@ -132,6 +132,7 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.dias_pendientes_auxilio_label.hide()
         self.dias_sancion_label = QLabel("Dias de sanción: ", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.dias_sancion_input = QLineEdit(placeholder_text = "Cantidad de dias de sancion", alignment = Qt.AlignLeft)
+        self.dias_sancion_input.set_validator(QIntValidator(0, 9999, self.dias_sancion_input))
         self.fecha_ini_prima_label = QLabel("Fecha inicio de periodo para prima: ", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.fecha_ini_prima_input = QLineEdit(placeholder_text = "dd-mm-aaaa", alignment = Qt.AlignLeft)
         self.fecha_fin_prima_label = QLabel("Fecha final de periodo para prima: ", object_name="subtitulos", alignment = Qt.AlignLeft)
@@ -150,6 +151,7 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.dias_total_vacaciones_label = QLabel("", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.titulo_dias_usados_vacaciones_label = QLabel("Dias de vacaciones disfrutados: ", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.dias_usados_vacaciones_input = QLineEdit(placeholder_text = "Cantidad de dias de vacaciones disfrutados", alignment = Qt.AlignLeft)
+        self.dias_usados_vacaciones_input.set_validator(QIntValidator(0, 9999, self.dias_usados_vacaciones_input))
         self.titulo_dias_pendientes_vacaciones_label = QLabel("Dias de vacaciones pendientes: ", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.dias_pendientes_vacaciones_label = QLabel("", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.dias_pendientes_vacaciones_label.hide()
@@ -242,10 +244,52 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
             
         else:
             self.setup_warning()
-            
+
+
+    def setup_calculos_conceptos_a_pagar(self):
+        self.formato_fecha = "%d-%m-%Y"
+        self.variable_fecha_ini_salario_pend = datetime.strptime(self.fecha_ini_salario_pend_input.text, self.formato_fecha)
+        self.variable_fecha_fin_salario_pend = datetime.strptime(self.fecha_fin_salario_pend_input.text, self.formato_fecha)
+        self.variable_dias_pendientes_salario = self.variable_fecha_fin_salario_pend - self.variable_fecha_ini_salario_pend
+        self.variable_dias_sancion_input_int = int(self.dias_sancion_input.text)
+        print(self.variable_dias_pendientes_salario)
+        print(type(self.variable_dias_pendientes_salario))
+        """if self.variable_dias_sancion_input_int > self.variable_dias_pendientes_salario:
+            self.variable_dias_pendientes_salario = 0
+        else:
+            self.variable_dias_pendientes_salario = self.variable_dias_pendientes_salario - self.variable_dias_sancion_input_int
+        self.variable_dias_pendientes_auxilio = self.variable_dias_pendientes_salario
+        self.variable_fecha_ini_prima = datetime.strptime(self.fecha_ini_prima_input.text, self.formato_fecha)
+        self.variable_fecha_fin_prima = datetime.strptime(self.fecha_fin_prima_input.text, self.formato_fecha)
+        self.variable_dias_pendientes_prima = self.variable_fecha_fin_prima - self.variable_fecha_ini_prima
+        self.variable_fecha_ini_cesantias = datetime.strptime(self.fecha_ini_cesantias_input.text, self.formato_fecha)
+        self.variable_fecha_fin_cesantias = datetime.strptime(self.fecha_fin_cesantias_input.text, self.formato_fecha)
+        self.variable_dias_pendientes_cesantias = self.variable_fecha_fin_cesantias - self.variable_fecha_ini_cesantias
+        self.variable_dias_total_vacaciones = (self.dias_total_contrato.days / 365) * 15
+        self.variable_dias_usados_vacaciones_input_int = int(self.dias_usados_vacaciones_input.text)
+        self.variable_dias_pendientes_vacaciones = self.variable_dias_total_vacaciones - self.variable_dias_usados_vacaciones_input_int
+
+        if self.variable_dias_pendientes_salario.days > 0 and self.variable_dias_pendientes_auxilio > 0 and self.variable_dias_pendientes_prima > 0 and self.variable_dias_pendientes_cesantias > 0:
+            self.dias_pendientes_salario_label.show()
+            self.dias_pendientes_salario_label.set_text(f"{self.variable_dias_pendientes_salario.days}")
+            self.dias_pendientes_auxilio_label.show()
+            self.dias_pendientes_auxilio_label.set_text(f"{self.variable_dias_pendientes_auxilio}")
+            self.dias_pendientes_prima_label.show()
+            self.dias_pendientes_prima_label.set_text(f"{self.variable_dias_pendientes_prima}")
+            self.dias_pendientes_cesantias_label.show()
+            self.dias_pendientes_cesantias_label.set_text(f"{self.variable_dias_pendientes_cesantias}")
+            self.dias_pendientes_vacaciones_label.show()
+            self.dias_pendientes_vacaciones_label.set_text(f"{self.variable_dias_pendientes_vacaciones}")
+        else:
+            self.setup_warning()
+            """
+
+
     
     def setup_warning(self):
         dialogo = QMessageBox.warning(self, "Error en escritura de fechas", "La fecha inicial no puede ser mayor que la fecha final")
+
+    
 
 
     

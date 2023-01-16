@@ -28,11 +28,23 @@ QComboBox QAbstractItemView{
     font-weight: bold;
 }
 
+#subtitulos_principales{
+
+    font-size: 25px;
+    font-weight: bold;
+    
+    
+}
+
 #subtitulos{
 
-    font-size: 20px;
-    
-    
+    font-size: 20px;   
+}
+
+#labels_vacios{
+    background-color: #242526;
+    color: #ffffff;
+    font-size: 22px;   
 }
 
 

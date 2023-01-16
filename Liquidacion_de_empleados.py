@@ -23,8 +23,8 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         
         self.root_layout.add_widget(self.fr_titulo, 5)
         self.root_layout.add_widget(self.fr_datos_basicos_empleados,20)
-        self.root_layout.add_widget(self.fr_conceptos_a_pagar,50)
-        self.root_layout.add_widget(self.fr_siguiente_frame,25)
+        self.root_layout.add_widget(self.fr_conceptos_a_pagar,40)
+        self.root_layout.add_widget(self.fr_siguiente_frame,35)
 
 
         self.widget = QWidget()
@@ -61,7 +61,7 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
     def setup_datos_empleado_frame(self):
         self.grid_datos_empleado = QGridLayout()
         
-        self.titulo_datos_empleado = QLabel("Digite los datos del empleado: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.titulo_datos_empleado = QLabel("Digite los datos del empleado: ", object_name="subtitulos_principales", alignment = Qt.AlignLeft)
         self.nombre_label = QLabel("Nombre completo: ", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.nombre_input = QLineEdit(placeholder_text = "Nombre", alignment = Qt.AlignLeft)
         self.cedula_label = QLabel("Cedula: ", object_name="subtitulos", alignment = Qt.AlignLeft)
@@ -80,7 +80,7 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.auxilio_trans_label = QLabel("Auxilio de transporte: ", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.auxilio_trans_input = QLineEdit(placeholder_text = "Valor sin puntos ni comas", alignment = Qt.AlignLeft)
         self.titulo_dias_trabajados_label = QLabel("Total dias trabajados: ", object_name="subtitulos", alignment = Qt.AlignLeft)
-        self.dias_trabajados_label = QLabel("", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.dias_trabajados_label = QLabel("", object_name="labels_vacios", alignment = Qt.AlignLeft)
         self.dias_trabajados_label.hide()
         self.guardar_datos_basicos_btn = QPushButton()
         self.guardar_datos_basicos_btn.text = "Guardar Datos"
@@ -119,7 +119,7 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
     def setup_conceptos_a_pagar_frame(self):
         self.grid_conceptos_a_pagar = QGridLayout()
         
-        self.titulo_conceptos_a_pagar = QLabel("Conceptos a pagar: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.titulo_conceptos_a_pagar = QLabel("Conceptos a pagar: ", object_name="subtitulos_principales", alignment = Qt.AlignLeft)
         self.fecha_ini_salario_pend_label = QLabel("Fecha inicio de ultimo salario: ", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.fecha_ini_salario_pend_input = QLineEdit(placeholder_text = "dd-mm-aaaa", alignment = Qt.AlignLeft)
         self.fecha_fin_salario_pend_label = QLabel("Fecha final de ultimo salario: ", object_name="subtitulos", alignment = Qt.AlignLeft)
@@ -166,10 +166,10 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.grid_conceptos_a_pagar.add_widget(self.fecha_fin_salario_pend_input, 2, 4)
         self.grid_conceptos_a_pagar.add_widget(self.titulo_dias_pendientes_salario, 2, 5)
         self.grid_conceptos_a_pagar.add_widget(self.dias_pendientes_salario_label, 2, 6)
-        self.grid_conceptos_a_pagar.add_widget(self.titulo_dias_pendientes_auxilio, 3, 5)
-        self.grid_conceptos_a_pagar.add_widget(self.dias_pendientes_auxilio_label, 3, 6)
-        self.grid_conceptos_a_pagar.add_widget(self.dias_sancion_label, 4, 5)
-        self.grid_conceptos_a_pagar.add_widget(self.dias_sancion_input, 4, 6)
+        self.grid_conceptos_a_pagar.add_widget(self.titulo_dias_pendientes_auxilio, 3, 1)
+        self.grid_conceptos_a_pagar.add_widget(self.dias_pendientes_auxilio_label, 3, 2)
+        self.grid_conceptos_a_pagar.add_widget(self.dias_sancion_label, 3, 3)
+        self.grid_conceptos_a_pagar.add_widget(self.dias_sancion_input, 3, 4)
         self.grid_conceptos_a_pagar.add_widget(self.fecha_ini_prima_label, 5, 1)
         self.grid_conceptos_a_pagar.add_widget(self.fecha_ini_prima_input, 5, 2)
         self.grid_conceptos_a_pagar.add_widget(self.fecha_fin_prima_label, 5, 3)
@@ -252,12 +252,12 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.variable_fecha_fin_salario_pend = datetime.strptime(self.fecha_fin_salario_pend_input.text, self.formato_fecha)
         self.variable_dias_pendientes_salario = self.variable_fecha_fin_salario_pend - self.variable_fecha_ini_salario_pend
         self.variable_dias_sancion_input_int = int(self.dias_sancion_input.text)
-        print(self.variable_dias_pendientes_salario)
-        print(type(self.variable_dias_pendientes_salario))
-        """if self.variable_dias_sancion_input_int > self.variable_dias_pendientes_salario:
+        
+        if self.variable_dias_sancion_input_int > self.variable_dias_pendientes_salario.days:
             self.variable_dias_pendientes_salario = 0
         else:
-            self.variable_dias_pendientes_salario = self.variable_dias_pendientes_salario - self.variable_dias_sancion_input_int
+            self.variable_dias_pendientes_salario = self.variable_dias_pendientes_salario.days - self.variable_dias_sancion_input_int
+        
         self.variable_dias_pendientes_auxilio = self.variable_dias_pendientes_salario
         self.variable_fecha_ini_prima = datetime.strptime(self.fecha_ini_prima_input.text, self.formato_fecha)
         self.variable_fecha_fin_prima = datetime.strptime(self.fecha_fin_prima_input.text, self.formato_fecha)
@@ -268,21 +268,25 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.variable_dias_total_vacaciones = (self.dias_total_contrato.days / 365) * 15
         self.variable_dias_usados_vacaciones_input_int = int(self.dias_usados_vacaciones_input.text)
         self.variable_dias_pendientes_vacaciones = self.variable_dias_total_vacaciones - self.variable_dias_usados_vacaciones_input_int
+        
 
-        if self.variable_dias_pendientes_salario.days > 0 and self.variable_dias_pendientes_auxilio > 0 and self.variable_dias_pendientes_prima > 0 and self.variable_dias_pendientes_cesantias > 0:
+        if self.variable_dias_pendientes_salario > 0 and self.variable_dias_pendientes_auxilio > 0 and self.variable_dias_pendientes_prima.days > 0 and self.variable_dias_pendientes_cesantias.days > 0:
             self.dias_pendientes_salario_label.show()
-            self.dias_pendientes_salario_label.set_text(f"{self.variable_dias_pendientes_salario.days}")
+            self.dias_pendientes_salario_label.set_text(f"{self.variable_dias_pendientes_salario}")
             self.dias_pendientes_auxilio_label.show()
             self.dias_pendientes_auxilio_label.set_text(f"{self.variable_dias_pendientes_auxilio}")
             self.dias_pendientes_prima_label.show()
-            self.dias_pendientes_prima_label.set_text(f"{self.variable_dias_pendientes_prima}")
+            self.dias_pendientes_prima_label.set_text(f"{self.variable_dias_pendientes_prima.days}")
             self.dias_pendientes_cesantias_label.show()
-            self.dias_pendientes_cesantias_label.set_text(f"{self.variable_dias_pendientes_cesantias}")
+            self.dias_pendientes_cesantias_label.set_text(f"{self.variable_dias_pendientes_cesantias.days}")
+            self.dias_total_vacaciones_label.set_text("{:.2f}".format(self.variable_dias_total_vacaciones))
             self.dias_pendientes_vacaciones_label.show()
-            self.dias_pendientes_vacaciones_label.set_text(f"{self.variable_dias_pendientes_vacaciones}")
+            self.dias_pendientes_vacaciones_label.set_text("{:.2f}".format(self.variable_dias_pendientes_vacaciones))
+
+
         else:
             self.setup_warning()
-            """
+            
 
 
     

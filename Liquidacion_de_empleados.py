@@ -21,12 +21,14 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.fr_titulo = QFrame()
         self.fr_datos_basicos_empleados = QFrame()
         self.fr_conceptos_a_pagar = QFrame()
-        self.fr_siguiente_frame = QFrame()
+        self.fr_conceptos_a_descontar = QFrame()
+        self.fr_resumen = QFrame()
         
         self.root_layout.add_widget(self.fr_titulo, 5)
         self.root_layout.add_widget(self.fr_datos_basicos_empleados,20)
         self.root_layout.add_widget(self.fr_conceptos_a_pagar,40)
-        self.root_layout.add_widget(self.fr_siguiente_frame,35)
+        self.root_layout.add_widget(self.fr_conceptos_a_descontar,20)
+        self.root_layout.add_widget(self.fr_resumen,15)
 
 
         self.widget = QWidget()
@@ -38,14 +40,19 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.setup_title_frame()
         self.setup_datos_empleado_frame()
         self.setup_conceptos_a_pagar_frame()
+        self.setup_conceptos_a_descontar_frame()
+        self.setup_resumen_frame()
         
         
         self.guardar_datos_basicos_btn.clicked.connect(self.setup_total_dias_contrato) # Se conecta el metodo para que se ejecute la accion
         self.guardar_datos_basicos_btn.clicked.connect(self.setup_datos_empl_variable) # Se conecta el metodo para que se ejecute la accion
         self.generar_calculos_btn.clicked.connect(self.setup_calculos_conceptos_a_pagar) # Se conecta el metodo para que se ejecute la accion
         self.generar_calculos_btn.clicked.connect(self.setup_descuento_sancion) # Se conecta el metodo para que se ejecute la accion
+        self.generar_descuentos_btn.clicked.connect(self.setup_aplicar_descuentos) # Se conecta el metodo para que se ejecute la accion
         
+
         
+         
 
         
         
@@ -80,14 +87,18 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.fecha_fin_input = QLineEdit(placeholder_text = "dd-mm-aaaa",alignment = Qt.AlignLeft)
         self.salario_base_label = QLabel("Salario base del empleado: ", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.salario_base_input = QLineEdit(placeholder_text = "Valor sin puntos ni comas", alignment = Qt.AlignLeft)
+        self.salario_base_input.set_validator(QIntValidator(0, 999999999, self.salario_base_input))
         self.auxilio_trans_label = QLabel("Auxilio de transporte: ", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.auxilio_trans_input = QLineEdit(placeholder_text = "Valor sin puntos ni comas", alignment = Qt.AlignLeft)
+        self.auxilio_trans_input.set_validator(QIntValidator(0, 999999999, self.auxilio_trans_input))
         self.titulo_dias_trabajados_label = QLabel("Total dias trabajados: ", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.dias_trabajados_label = QLabel("", object_name="labels_vacios", alignment = Qt.AlignLeft)
         self.dias_trabajados_label.hide()
         self.guardar_datos_basicos_btn = QPushButton()
         self.guardar_datos_basicos_btn.text = "Guardar Datos"
         self.guardar_datos_basicos_btn.style_sheet = "background: #2A88C1"
+
+         
 
         
 
@@ -201,7 +212,53 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.fr_conceptos_a_pagar.set_layout(self.grid_conceptos_a_pagar)
         self.inputs_conceptos_a_pagar_layout = QVBoxLayout()
         self.inputs_conceptos_a_pagar_layout.add_stretch()
+
         
+        
+
+    def setup_conceptos_a_descontar_frame(self):
+        self.grid_conceptos_a_descontar = QGridLayout()
+
+        self.titulo_conceptos_a_descontar = QLabel("Conceptos a descontar: ", object_name="subtitulos_principales", alignment = Qt.AlignLeft)
+        self.salud_label = QLabel("Aporte a salud - 4 %: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.salud_porcen_label = QLabel("", object_name="labels_vacios", alignment = Qt.AlignLeft)
+        self.pension_label = QLabel("Aporte a pension - 4 %: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.pension_porcen_label = QLabel("", object_name="labels_vacios", alignment = Qt.AlignLeft)
+        self.prestamo_label = QLabel("Prestamos o anticipos: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.prestamo_input = QLineEdit(placeholder_text = "Valor de prestamos o anticipos a descontar", alignment = Qt.AlignLeft)
+        self.prestamo_input.set_validator(QIntValidator(0, 999999999, self.prestamo_input))
+        self.generar_descuentos_btn = QPushButton()
+        self.generar_descuentos_btn.text = "Generar Descuentos"
+        self.generar_descuentos_btn.style_sheet = "background: #2A88C1"
+        
+
+        self.grid_conceptos_a_descontar.add_widget(self.titulo_conceptos_a_descontar, 1, 1)
+        self.grid_conceptos_a_descontar.add_widget(self.salud_label, 2, 1)
+        self.grid_conceptos_a_descontar.add_widget(self.salud_porcen_label, 2, 2)
+        self.grid_conceptos_a_descontar.add_widget(self.pension_label, 2, 3)
+        self.grid_conceptos_a_descontar.add_widget(self.pension_porcen_label, 2, 4)
+        self.grid_conceptos_a_descontar.add_widget(self.prestamo_label, 3, 1)
+        self.grid_conceptos_a_descontar.add_widget(self.prestamo_input, 3, 2, 1, 2)
+        self.grid_conceptos_a_descontar.add_widget(self.generar_descuentos_btn, 4, 5)
+
+
+        self.fr_conceptos_a_descontar.set_layout(self.grid_conceptos_a_descontar)
+        self.inputs_conceptos_a_descontar_layout = QVBoxLayout()
+        self.inputs_conceptos_a_descontar_layout.add_stretch()
+
+
+    def setup_resumen_frame(self):
+        self.grid_resumen = QGridLayout()
+
+        self.titulo_resumen_liquidacion = QLabel("Resumen de la liquidacion: ", object_name="subtitulos_principales", alignment = Qt.AlignLeft)
+        self.subtotal_a_pagar_label = QLabel("Subtotal a pagar: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+
+        self.grid_resumen.add_widget(self.titulo_resumen_liquidacion, 1, 1)
+        self.grid_resumen.add_widget(self.subtotal_a_pagar_label, 2, 1)
+
+        self.fr_resumen.set_layout(self.grid_resumen)
+        self.inputs_resumen_layout = QVBoxLayout()
+        self.inputs_resumen_layout.add_stretch()
 
 
     def setup_crea_pdf(self):    
@@ -256,15 +313,22 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
             self.setup_warning()
 
 
+        self.salario_base = int(self.salario_base_input.text)
+        self.auxilio_trans = int(self.auxilio_trans_input.text)
+        self.salario_mas_auxilio = self.salario_base + self.auxilio_trans
+        
+        
+
+
     def setup_calculos_conceptos_a_pagar(self):
         self.formato_fecha = "%d-%m-%Y"
         self.variable_fecha_ini_salario_pend = datetime.strptime(self.fecha_ini_salario_pend_input.text, self.formato_fecha)
         self.variable_fecha_fin_salario_pend = datetime.strptime(self.fecha_fin_salario_pend_input.text, self.formato_fecha)
         self.variable_dias_pendientes_salario = self.variable_fecha_fin_salario_pend - self.variable_fecha_ini_salario_pend
         self.variable_dias_pendientes_salario = self.variable_dias_pendientes_salario.days + 1
-        print(self.variable_dias_pendientes_salario)
+        
         self.variable_dias_pendientes_auxilio = self.variable_dias_pendientes_salario
-        print(self.variable_dias_pendientes_auxilio)
+        
         self.variable_fecha_ini_prima = datetime.strptime(self.fecha_ini_prima_input.text, self.formato_fecha)
         self.variable_fecha_fin_prima = datetime.strptime(self.fecha_fin_prima_input.text, self.formato_fecha)
         self.variable_dias_pendientes_prima = self.variable_fecha_fin_prima - self.variable_fecha_ini_prima
@@ -272,13 +336,13 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         if "-01-" in self.fecha_ini_prima_input.text or "-02-" in self.fecha_ini_prima_input.text or "-03-" in self.fecha_ini_prima_input.text or "-04-" in self.fecha_ini_prima_input.text or "-05-" in self.fecha_ini_prima_input.text or "-06-" in self.fecha_ini_prima_input.text:
             self.variable_dias_pendientes_prima = (self.variable_dias_pendientes_prima / 365) * 361
             self.variable_dias_pendientes_prima = math.floor(self.variable_dias_pendientes_prima)
-            print(self.variable_dias_pendientes_prima)
+            
         else:
             if "-07-" in self.fecha_ini_prima_input.text or "-08-" in self.fecha_ini_prima_input.text or "-09-" in self.fecha_ini_prima_input.text or "-10-" in self.fecha_ini_prima_input.text or "-11-" in self.fecha_ini_prima_input.text or "-12-" in self.fecha_ini_prima_input.text:
                 self.variable_dias_pendientes_prima = self.variable_dias_pendientes_prima - 2 # por ser el segundo semestre se le restan los dos dias que se agregaron de Febrero
                 self.variable_dias_pendientes_prima = (self.variable_dias_pendientes_prima / 365) * 359
                 self.variable_dias_pendientes_prima = math.floor(self.variable_dias_pendientes_prima)
-                print(self.variable_dias_pendientes_prima)
+                
             
         self.variable_fecha_ini_cesantias = datetime.strptime(self.fecha_ini_cesantias_input.text, self.formato_fecha)
         self.variable_fecha_fin_cesantias = datetime.strptime(self.fecha_fin_cesantias_input.text, self.formato_fecha)
@@ -287,18 +351,18 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         if self.variable_dias_pendientes_cesantias <= 183:
             self.variable_dias_pendientes_cesantias = (self.variable_dias_pendientes_cesantias / 365) * 361
             self.variable_dias_pendientes_cesantias = math.floor(self.variable_dias_pendientes_cesantias)
-            print(self.variable_dias_pendientes_cesantias)
+            
         else:
             self.variable_dias_pendientes_cesantias = self.variable_dias_pendientes_cesantias - 1
             self.variable_dias_pendientes_cesantias = (self.variable_dias_pendientes_cesantias / 365) * 360
             self.variable_dias_pendientes_cesantias = math.floor(self.variable_dias_pendientes_cesantias)
-            print(self.variable_dias_pendientes_cesantias)
+            
 
 
         self.variable_dias_total_vacaciones = (self.dias_total_contrato_360 / 360) * 15
         self.variable_dias_usados_vacaciones_input_int = int(self.dias_usados_vacaciones_input.text)
         self.variable_dias_pendientes_vacaciones = self.variable_dias_total_vacaciones - self.variable_dias_usados_vacaciones_input_int
-        print(self.variable_dias_pendientes_vacaciones)
+        
 
         if self.variable_dias_pendientes_salario > 0 and self.variable_dias_pendientes_auxilio > 0 and self.variable_dias_pendientes_prima > 0 and self.variable_dias_pendientes_cesantias > 0:
             self.dias_pendientes_salario_label.show()
@@ -315,47 +379,12 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
 
         else:
             self.setup_warning()
-        """
-        self.formato_fecha = "%d-%m-%Y"
-        self.variable_fecha_ini_salario_pend = datetime.strptime(self.fecha_ini_salario_pend_input.text, self.formato_fecha)
-        self.variable_fecha_fin_salario_pend = datetime.strptime(self.fecha_fin_salario_pend_input.text, self.formato_fecha)
-        self.variable_dias_pendientes_salario = (self.variable_fecha_fin_salario_pend - self.variable_fecha_ini_salario_pend)
-        self.variable_dias_sancion_input_int = int(self.dias_sancion_input.text)
-        
-        if self.variable_dias_sancion_input_int > self.variable_dias_pendientes_salario.days:
-            self.variable_dias_pendientes_salario = 0
-        else:
-            self.variable_dias_pendientes_salario = (self.variable_dias_pendientes_salario.days - self.variable_dias_sancion_input_int)
-        
-        self.variable_dias_pendientes_auxilio = self.variable_dias_pendientes_salario
-        self.variable_fecha_ini_prima = datetime.strptime(self.fecha_ini_prima_input.text, self.formato_fecha)
-        self.variable_fecha_fin_prima = datetime.strptime(self.fecha_fin_prima_input.text, self.formato_fecha)
-        self.variable_dias_pendientes_prima = self.variable_fecha_fin_prima - self.variable_fecha_ini_prima
-        self.variable_fecha_ini_cesantias = datetime.strptime(self.fecha_ini_cesantias_input.text, self.formato_fecha)
-        self.variable_fecha_fin_cesantias = datetime.strptime(self.fecha_fin_cesantias_input.text, self.formato_fecha)
-        self.variable_dias_pendientes_cesantias = self.variable_fecha_fin_cesantias - self.variable_fecha_ini_cesantias
-        self.variable_dias_total_vacaciones = (self.dias_total_contrato / 360) * 15
-        self.variable_dias_usados_vacaciones_input_int = int(self.dias_usados_vacaciones_input.text)
-        self.variable_dias_pendientes_vacaciones = self.variable_dias_total_vacaciones - self.variable_dias_usados_vacaciones_input_int
-        
-
-        if self.variable_dias_pendientes_salario > 0 and self.variable_dias_pendientes_auxilio > 0 and self.variable_dias_pendientes_prima.days > 0 and self.variable_dias_pendientes_cesantias.days > 0:
-            self.dias_pendientes_salario_label.show()
-            self.dias_pendientes_salario_label.set_text(f"{self.variable_dias_pendientes_salario}")
-            self.dias_pendientes_auxilio_label.show()
-            self.dias_pendientes_auxilio_label.set_text(f"{self.variable_dias_pendientes_auxilio}")
-            self.dias_pendientes_prima_label.show()
-            self.dias_pendientes_prima_label.set_text(f"{self.variable_dias_pendientes_prima.days}")
-            self.dias_pendientes_cesantias_label.show()
-            self.dias_pendientes_cesantias_label.set_text(f"{self.variable_dias_pendientes_cesantias.days}")
-            self.dias_total_vacaciones_label.set_text("{:.2f}".format(self.variable_dias_total_vacaciones))
-            self.dias_pendientes_vacaciones_label.show()
-            self.dias_pendientes_vacaciones_label.set_text("{:.2f}".format(self.variable_dias_pendientes_vacaciones))
 
 
-        else:
-            self.setup_warning()
-        """    
+
+
+        
+          
         
     def setup_descuento_sancion(self):
         self.variable_dias_sancion_input_int = int(self.dias_sancion_input.text)
@@ -373,11 +402,11 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
             self.variable_dias_pendientes_salario = (self.variable_dias_pendientes_salario - self.variable_dias_sancion_input_int)
             self.dias_pendientes_salario_label.show()
             self.dias_pendientes_salario_label.set_text(f"{self.variable_dias_pendientes_salario}")
-            print(self.variable_dias_pendientes_salario)
+            
             self.variable_dias_pendientes_auxilio = self.variable_dias_pendientes_salario
             self.dias_pendientes_auxilio_label.show()
             self.dias_pendientes_auxilio_label.set_text(f"{self.variable_dias_pendientes_auxilio}")
-            print(self.variable_dias_pendientes_auxilio)
+            
 
         if self.variable_dias_sancion_input_int >= self.variable_dias_pendientes_prima:
             self.variable_dias_pendientes_prima = 0
@@ -387,7 +416,7 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
             self.variable_dias_pendientes_prima = self.variable_dias_pendientes_prima - self.variable_dias_sancion_input_int 
             self.dias_pendientes_prima_label.show()
             self.dias_pendientes_prima_label.set_text(f"{self.variable_dias_pendientes_prima}")
-            print(self.variable_dias_pendientes_prima)
+            
 
         if self.variable_dias_sancion_input_int >= self.variable_dias_pendientes_cesantias:
             self.variable_dias_pendientes_cesantias = 0
@@ -397,8 +426,37 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
             self.variable_dias_pendientes_cesantias = self.variable_dias_pendientes_cesantias - self.variable_dias_sancion_input_int 
             self.dias_pendientes_cesantias_label.show()
             self.dias_pendientes_cesantias_label.set_text(f"{self.variable_dias_pendientes_cesantias}")
-            print(self.variable_dias_pendientes_cesantias)
+
+
+        self.valor_ultimo_salario_a_pagar = (self.salario_base / 30) * self.variable_dias_pendientes_salario
+        self.valor_ultimo_auxilio_a_pagar = (self.auxilio_trans / 30) * self.variable_dias_pendientes_salario
+        self.horas_extras_input_int = int(self.horas_extras_input.text)
+        self.valor_extras_a_pagar = (((self.salario_base / 30) / 8) * self.horas_extras_input_int) * 1.25
+        self.valor_prima_a_pagar = ((self.salario_mas_auxilio / 2) / 180) * self.variable_dias_pendientes_prima
+        self.valor_cesantias_a_pagar = (self.salario_mas_auxilio / 360) * self.variable_dias_pendientes_cesantias
+        self.valor_intereses_cesantias_a_pagar = ((self.valor_cesantias_a_pagar / 360) * self.variable_dias_pendientes_cesantias) * 0.12
+        self.valor_vacaciones_a_pagar = ((self.salario_mas_auxilio / 2) / 15) * self.variable_dias_pendientes_vacaciones
+
+        self.subtotal_a_pagar = self.valor_ultimo_salario_a_pagar + self.valor_ultimo_auxilio_a_pagar + self.valor_extras_a_pagar + self.valor_prima_a_pagar + self.valor_cesantias_a_pagar + self.valor_intereses_cesantias_a_pagar + self.valor_vacaciones_a_pagar
+        print(self.subtotal_a_pagar)
         
+            
+
+
+
+    def setup_aplicar_descuentos(self):
+        self.descuento_salud = (self.valor_ultimo_salario_a_pagar + self.valor_ultimo_auxilio_a_pagar + self.valor_extras_a_pagar) * 0.04
+        self.descuento_pension = (self.valor_ultimo_salario_a_pagar + self.valor_ultimo_auxilio_a_pagar + self.valor_extras_a_pagar) * 0.04
+        self.descuento_prestamo = int(self.prestamo_input.text)
+        self.salud_porcen_label.set_text("{:.2f}".format(self.descuento_salud))
+        self.pension_porcen_label.set_text("{:.2f}".format(self.descuento_pension))
+
+        self.subtotal_descuentos = self.descuento_salud + self.descuento_pension + self.descuento_prestamo
+        print(self.subtotal_descuentos)
+        self.total_liquidacion = self.subtotal_a_pagar - self.subtotal_descuentos
+        print(self.total_liquidacion)
+
+
     def setup_warning(self):
         dialogo = QMessageBox.warning(self, "Error en escritura de fechas", "La fecha inicial no puede ser mayor que la fecha final")
 

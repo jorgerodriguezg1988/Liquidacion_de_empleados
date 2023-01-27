@@ -45,10 +45,11 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         
         
         self.guardar_datos_basicos_btn.clicked.connect(self.setup_total_dias_contrato) # Se conecta el metodo para que se ejecute la accion
-        self.guardar_datos_basicos_btn.clicked.connect(self.setup_datos_empl_variable) # Se conecta el metodo para que se ejecute la accion
         self.generar_calculos_btn.clicked.connect(self.setup_calculos_conceptos_a_pagar) # Se conecta el metodo para que se ejecute la accion
         self.generar_calculos_btn.clicked.connect(self.setup_descuento_sancion) # Se conecta el metodo para que se ejecute la accion
         self.generar_descuentos_btn.clicked.connect(self.setup_aplicar_descuentos) # Se conecta el metodo para que se ejecute la accion
+        self.generar_pdf_btn.clicked.connect(self.setup_crea_pdf) # Se conecta el metodo para que se ejecute la accion
+        
         
 
         
@@ -220,9 +221,9 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.grid_conceptos_a_descontar = QGridLayout()
 
         self.titulo_conceptos_a_descontar = QLabel("Conceptos a descontar: ", object_name="subtitulos_principales", alignment = Qt.AlignLeft)
-        self.salud_label = QLabel("Aporte a salud - 4 %: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.salud_label = QLabel("Aporte a salud - 4 %: $ ", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.salud_porcen_label = QLabel("", object_name="labels_vacios", alignment = Qt.AlignLeft)
-        self.pension_label = QLabel("Aporte a pension - 4 %: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.pension_label = QLabel("Aporte a pension - 4 %: $ ", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.pension_porcen_label = QLabel("", object_name="labels_vacios", alignment = Qt.AlignLeft)
         self.prestamo_label = QLabel("Prestamos o anticipos: ", object_name="subtitulos", alignment = Qt.AlignLeft)
         self.prestamo_input = QLineEdit(placeholder_text = "Valor de prestamos o anticipos a descontar", alignment = Qt.AlignLeft)
@@ -251,49 +252,34 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.grid_resumen = QGridLayout()
 
         self.titulo_resumen_liquidacion = QLabel("Resumen de la liquidacion: ", object_name="subtitulos_principales", alignment = Qt.AlignLeft)
-        self.subtotal_a_pagar_label = QLabel("Subtotal a pagar: ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.titulo_subtotal_a_pagar_label = QLabel("Subtotal a pagar: $ ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.subtotal_a_pagar_label = QLabel("", object_name="labels_vacios", alignment = Qt.AlignLeft)
+        self.titulo_subtotal_a_descontar_label = QLabel("Subtotal a descontar: $ ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.subtotal_a_descontar_label = QLabel("", object_name="labels_vacios", alignment = Qt.AlignLeft)
+        self.titulo_valor_final_a_pagar_label = QLabel("Total a pagar: $ ", object_name="subtitulos", alignment = Qt.AlignLeft)
+        self.valor_final_a_pagar_label = QLabel("", object_name="labels_vacios", alignment = Qt.AlignLeft)
+        self.generar_pdf_btn = QPushButton()
+        self.generar_pdf_btn.text = "Generar y Descargar PDF"
+        self.generar_pdf_btn.style_sheet = "background: white"
 
         self.grid_resumen.add_widget(self.titulo_resumen_liquidacion, 1, 1)
-        self.grid_resumen.add_widget(self.subtotal_a_pagar_label, 2, 1)
+        self.grid_resumen.add_widget(self.titulo_subtotal_a_pagar_label, 2, 1)
+        self.grid_resumen.add_widget(self.subtotal_a_pagar_label, 2, 2)
+        self.grid_resumen.add_widget(self.titulo_subtotal_a_descontar_label, 2, 3)
+        self.grid_resumen.add_widget(self.subtotal_a_descontar_label, 2, 4)
+        self.grid_resumen.add_widget(self.titulo_valor_final_a_pagar_label, 2, 5)
+        self.grid_resumen.add_widget(self.valor_final_a_pagar_label, 2, 6)
+        self.grid_resumen.add_widget(self.generar_pdf_btn, 3, 7)
+
 
         self.fr_resumen.set_layout(self.grid_resumen)
         self.inputs_resumen_layout = QVBoxLayout()
         self.inputs_resumen_layout.add_stretch()
 
 
-    def setup_crea_pdf(self):    
     
-        pdf = QPdfWriter(f"Liquidacion de {self.nombre_input.text}.pdf")
-        pdf.set_page_size(QPageSize.Letter)
-        painter = QPainter(pdf)
-        painter.draw_text(4000, 1000, "RESULTADO DE LA LIQUIDACION")
-        painter.draw_text(0, 1200, "_____________________________________________________________________________________________________________________________________________________________")
-        painter.draw_text(800, 1500, "DATOS DEL EMPLEADO: ")
-        painter.draw_text(800, 1900, f"NOMBRE:      {self.nombre_input.text}")
-        painter.draw_text(5500, 1900, f"DOCUMENTO:               {self.cedula_input.text}")
-        painter.draw_text(800, 2200, f"CARGO:        {self.cargo_input.text}")
-        painter.draw_text(5500, 2200, f"MOTIVO DE RETIRO:       {self.tipo_retiro_combox.current_text}")
-        painter.draw_text(800, 2500, f"FECHA INICIO DE CONTRATO:        {self.fecha_ini_input.text}")
-        painter.draw_text(5500, 2500, f"FECHA FIN DE CONTRATO:       {self.fecha_fin_input.text}")
-        painter.draw_text(800, 2800, f"SALARIO BASE DEL EMPLEADO:        $ {self.salario_base_input.text}")
-        painter.draw_text(5500, 2800, f"AUXILIO DE TRANSPORTE:       $ {self.auxilio_trans_input.text}")
-        #painter.window().width()//2,
-        #painter.window().height()//2,
-        painter.end()
 
-    def setup_datos_empl_variable(self):
-        """
-        self.guardar_datos_basicos_btn.clicked.connect(self.setup_datos_empl_variable) # Se conecta el metodo para que se ejecute la accion
-        self.variable_nombre = self.nombre_input.text
-        self.variable_cedula = self.cedula_input.text
-        self.variable_cargo = self.cargo_input.text
-        self.variable_retiro = self.tipo_retiro_combox.current_text
-        self.variable_fecha_ini = self.fecha_ini_input.text
-        self.variable_fecha_fin = self.fecha_fin_input.text
-        self.variable_salario_base = self.salario_base_input.text
-        self.variable_auxilio_trans = self.auxilio_trans_input.text
-        """
-        #self.setup_crea_pdf()
+    
 
     def setup_total_dias_contrato(self):
         
@@ -438,7 +424,7 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.valor_vacaciones_a_pagar = ((self.salario_mas_auxilio / 2) / 15) * self.variable_dias_pendientes_vacaciones
 
         self.subtotal_a_pagar = self.valor_ultimo_salario_a_pagar + self.valor_ultimo_auxilio_a_pagar + self.valor_extras_a_pagar + self.valor_prima_a_pagar + self.valor_cesantias_a_pagar + self.valor_intereses_cesantias_a_pagar + self.valor_vacaciones_a_pagar
-        print(self.subtotal_a_pagar)
+        
         
             
 
@@ -448,13 +434,43 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.descuento_salud = (self.valor_ultimo_salario_a_pagar + self.valor_ultimo_auxilio_a_pagar + self.valor_extras_a_pagar) * 0.04
         self.descuento_pension = (self.valor_ultimo_salario_a_pagar + self.valor_ultimo_auxilio_a_pagar + self.valor_extras_a_pagar) * 0.04
         self.descuento_prestamo = int(self.prestamo_input.text)
-        self.salud_porcen_label.set_text("{:.2f}".format(self.descuento_salud))
-        self.pension_porcen_label.set_text("{:.2f}".format(self.descuento_pension))
+        self.salud_porcen_label.set_text("{:,.2f}".format(self.descuento_salud))
+        self.pension_porcen_label.set_text("{:,.2f}".format(self.descuento_pension))
 
         self.subtotal_descuentos = self.descuento_salud + self.descuento_pension + self.descuento_prestamo
-        print(self.subtotal_descuentos)
         self.total_liquidacion = self.subtotal_a_pagar - self.subtotal_descuentos
-        print(self.total_liquidacion)
+        
+        self.subtotal_a_pagar_label.set_text("{:,.2f}".format(self.subtotal_a_pagar))
+        self.subtotal_a_descontar_label.set_text("{:,.2f}".format(self.subtotal_descuentos))
+        self.valor_final_a_pagar_label.set_text("{:,.2f}".format(self.total_liquidacion))
+
+
+
+
+    def setup_crea_pdf(self):    
+    
+        pdf = QPdfWriter(f"Liquidacion de {self.nombre_input.text}.pdf")
+        pdf.set_page_size(QPageSize.Letter)
+        painter = QPainter(pdf)
+        painter.draw_text(4000, 1000, "RESULTADO DE LA LIQUIDACION")
+        painter.draw_text(0, 1200, "_____________________________________________________________________________________________________________________________________________________________")
+        painter.draw_text(800, 1500, "DATOS DEL EMPLEADO: ")
+        painter.draw_text(800, 1900, f"NOMBRE:      {self.nombre_input.text}")
+        painter.draw_text(5500, 1900, f"DOCUMENTO:               {self.cedula_input.text}")
+        painter.draw_text(800, 2200, f"CARGO:        {self.cargo_input.text}")
+        painter.draw_text(5500, 2200, f"MOTIVO DE RETIRO:       {self.tipo_retiro_combox.current_text}")
+        painter.draw_text(800, 2500, f"FECHA INICIO DE CONTRATO:        {self.fecha_ini_input.text}")
+        painter.draw_text(5500, 2500, f"FECHA FIN DE CONTRATO:       {self.fecha_fin_input.text}")
+        painter.draw_text(800, 2800, f"SALARIO BASE DEL EMPLEADO:        $ {self.salario_base_input.text}")
+        painter.draw_text(5500, 2800, f"AUXILIO DE TRANSPORTE:       $ {self.auxilio_trans_input.text}")
+        painter.draw_text(800, 3100, f"TOTAL DIAS TRABAJADOS:        {self.dias_trabajados_label.text}")
+        #painter.window().width()//2,
+        #painter.window().height()//2,
+        painter.end()
+        self.setup_information()
+
+    def setup_information(self):
+        dialogo = QMessageBox.information(self, "Generacion de PDF", "Archivo PDF generado exitosamente")
 
 
     def setup_warning(self):

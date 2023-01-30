@@ -5,7 +5,8 @@ from PySide6.QtGui import QPdfWriter, QPainter, QPageSize, QIntValidator
 from PySide6.QtWidgets import QApplication
 from __feature__ import snake_case, true_property
 from datetime import datetime, date, time, timedelta
-import calendar
+import os
+import getpass
 import math
 
 from styles import estilos_menu # Se hace el llamado de la hoja de estilos como en CSS
@@ -45,22 +46,11 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         
         
         self.guardar_datos_basicos_btn.clicked.connect(self.setup_total_dias_contrato) # Se conecta el metodo para que se ejecute la accion
-        self.generar_calculos_btn.clicked.connect(self.setup_calculos_conceptos_a_pagar) # Se conecta el metodo para que se ejecute la accion
-        self.generar_calculos_btn.clicked.connect(self.setup_descuento_sancion) # Se conecta el metodo para que se ejecute la accion
-        self.generar_descuentos_btn.clicked.connect(self.setup_aplicar_descuentos) # Se conecta el metodo para que se ejecute la accion
-        self.generar_pdf_btn.clicked.connect(self.setup_crea_pdf) # Se conecta el metodo para que se ejecute la accion
+        self.generar_calculos_btn.clicked.connect(self.setup_calculos_conceptos_a_pagar) 
+        self.generar_calculos_btn.clicked.connect(self.setup_descuento_sancion) 
+        self.generar_descuentos_btn.clicked.connect(self.setup_aplicar_descuentos) 
+        self.generar_pdf_btn.clicked.connect(self.setup_crea_pdf) 
         
-        
-
-        
-         
-
-        
-        
-                
-        
-
-
     def setup_title_frame(self):
         self.titulo_title = QLabel("LIQUIDACION DE EMPLEADOS POR FINALIZACION DE CONTRATO", object_name="titulo_principal", alignment = Qt.AlignCenter)
 
@@ -98,11 +88,7 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.guardar_datos_basicos_btn = QPushButton()
         self.guardar_datos_basicos_btn.text = "Guardar Datos"
         self.guardar_datos_basicos_btn.style_sheet = "background: #2A88C1"
-
-         
-
         
-
         self.grid_datos_empleado.add_widget(self.titulo_datos_empleado, 1, 1)
         self.grid_datos_empleado.add_widget(self.nombre_label, 2, 1)
         self.grid_datos_empleado.add_widget(self.nombre_input, 2, 2)
@@ -213,9 +199,7 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.fr_conceptos_a_pagar.set_layout(self.grid_conceptos_a_pagar)
         self.inputs_conceptos_a_pagar_layout = QVBoxLayout()
         self.inputs_conceptos_a_pagar_layout.add_stretch()
-
-        
-        
+         
 
     def setup_conceptos_a_descontar_frame(self):
         self.grid_conceptos_a_descontar = QGridLayout()
@@ -276,11 +260,7 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.inputs_resumen_layout = QVBoxLayout()
         self.inputs_resumen_layout.add_stretch()
 
-
-    
-
-    
-
+        
     def setup_total_dias_contrato(self):
         
         self.formato_fecha = "%d-%m-%Y"
@@ -303,9 +283,6 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.auxilio_trans = int(self.auxilio_trans_input.text)
         self.salario_mas_auxilio = self.salario_base + self.auxilio_trans
         
-        
-
-
     def setup_calculos_conceptos_a_pagar(self):
         self.formato_fecha = "%d-%m-%Y"
         self.variable_fecha_ini_salario_pend = datetime.strptime(self.fecha_ini_salario_pend_input.text, self.formato_fecha)
@@ -343,8 +320,6 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
             self.variable_dias_pendientes_cesantias = (self.variable_dias_pendientes_cesantias / 365) * 360
             self.variable_dias_pendientes_cesantias = math.floor(self.variable_dias_pendientes_cesantias)
             
-
-
         self.variable_dias_total_vacaciones = (self.dias_total_contrato_360 / 360) * 15
         self.variable_dias_usados_vacaciones_input_int = int(self.dias_usados_vacaciones_input.text)
         self.variable_dias_pendientes_vacaciones = self.variable_dias_total_vacaciones - self.variable_dias_usados_vacaciones_input_int
@@ -366,12 +341,7 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         else:
             self.setup_warning()
 
-
-
-
-        
-          
-        
+                
     def setup_descuento_sancion(self):
         self.variable_dias_sancion_input_int = int(self.dias_sancion_input.text)
         
@@ -425,11 +395,6 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
 
         self.subtotal_a_pagar = self.valor_ultimo_salario_a_pagar + self.valor_ultimo_auxilio_a_pagar + self.valor_extras_a_pagar + self.valor_prima_a_pagar + self.valor_cesantias_a_pagar + self.valor_intereses_cesantias_a_pagar + self.valor_vacaciones_a_pagar
         
-        
-            
-
-
-
     def setup_aplicar_descuentos(self):
         self.descuento_salud = (self.valor_ultimo_salario_a_pagar + self.valor_ultimo_auxilio_a_pagar + self.valor_extras_a_pagar) * 0.04
         self.descuento_pension = (self.valor_ultimo_salario_a_pagar + self.valor_ultimo_auxilio_a_pagar + self.valor_extras_a_pagar) * 0.04
@@ -445,28 +410,84 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
         self.valor_final_a_pagar_label.set_text("{:,.2f}".format(self.total_liquidacion))
 
 
-
-
     def setup_crea_pdf(self):    
-    
-        pdf = QPdfWriter(f"Liquidacion de {self.nombre_input.text}.pdf")
-        pdf.set_page_size(QPageSize.Letter)
+        
+        user = getpass.getuser()
+        os.chdir("C:/Users/"+ user +"/Downloads")
+               
+        pdf = QPdfWriter(f"Liquidacion de {self.nombre_input.text}.pdf")     #painter.draw_text(5000, 12300, "$  {:,.2f}" .format(self.valor_vacaciones_a_pagar))
+        pdf.set_page_size(QPageSize.Legal)
         painter = QPainter(pdf)
         painter.draw_text(4000, 1000, "RESULTADO DE LA LIQUIDACION")
         painter.draw_text(0, 1200, "_____________________________________________________________________________________________________________________________________________________________")
-        painter.draw_text(800, 1500, "DATOS DEL EMPLEADO: ")
+        painter.draw_text(1000, 1500, "DATOS DEL EMPLEADO: ")
         painter.draw_text(800, 1900, f"NOMBRE:      {self.nombre_input.text}")
         painter.draw_text(5500, 1900, f"DOCUMENTO:               {self.cedula_input.text}")
         painter.draw_text(800, 2200, f"CARGO:        {self.cargo_input.text}")
         painter.draw_text(5500, 2200, f"MOTIVO DE RETIRO:       {self.tipo_retiro_combox.current_text}")
         painter.draw_text(800, 2500, f"FECHA INICIO DE CONTRATO:        {self.fecha_ini_input.text}")
         painter.draw_text(5500, 2500, f"FECHA FIN DE CONTRATO:       {self.fecha_fin_input.text}")
-        painter.draw_text(800, 2800, f"SALARIO BASE DEL EMPLEADO:        $ {self.salario_base_input.text}")
-        painter.draw_text(5500, 2800, f"AUXILIO DE TRANSPORTE:       $ {self.auxilio_trans_input.text}")
+        painter.draw_text(800, 2800, "SALARIO BASE DEL EMPLEADO:        $ {:,.2f}".format(self.salario_base))
+        painter.draw_text(5500, 2800, "AUXILIO DE TRANSPORTE:       $ {:,.2f}".format(self.auxilio_trans))
         painter.draw_text(800, 3100, f"TOTAL DIAS TRABAJADOS:        {self.dias_trabajados_label.text}")
+        painter.draw_text(0, 3300, "_____________________________________________________________________________________________________________________________________________________________")
+        painter.draw_text(1000, 3600, "CONCEPTOS A PAGAR: ")
+        painter.draw_text(800, 4000, "ULTIMO SALARIO: ")
+        painter.draw_text(800, 4300, f"Fecha Inicio:              {self.fecha_ini_salario_pend_input.text}")
+        painter.draw_text(5500, 4300, f"Fecha Final:              {self.fecha_fin_salario_pend_input.text}")
+        painter.draw_text(800, 4500, f"Días de sanción:                                                            - {self.dias_sancion_input.text} días")
+        painter.draw_text(800, 4700, f"Días pendientes de pago por salario:                              {self.dias_pendientes_salario_label.text} días")
+        painter.draw_text(800, 4900, f"Días pendientes de pago por auxilio de transporte:       {self.dias_pendientes_auxilio_label.text} días")
+        painter.draw_text(800, 5100, f"Horas extras pendientes de pago:                                  {self.horas_extras_input.text} horas")
+        painter.draw_text(800, 5500, f"PRIMA LEGAL: ")
+        painter.draw_text(800, 5800, f"Fecha Inicio:              {self.fecha_ini_prima_input.text}")
+        painter.draw_text(5500, 5800, f"Fecha Final:              {self.fecha_fin_prima_input.text}")
+        painter.draw_text(800, 6000, f"Días pendientes de pago por prima legal:                      {self.dias_pendientes_prima_label.text} días")
+        painter.draw_text(800, 6400, f"CESANTIAS: ")
+        painter.draw_text(800, 6700, f"Fecha Inicio:              {self.fecha_ini_cesantias_input.text}")
+        painter.draw_text(5500, 6700, f"Fecha Final:              {self.fecha_fin_cesantias_input.text}")
+        painter.draw_text(800, 7000, f"Días pendientes de pago por cesantias:                      {self.dias_pendientes_cesantias_label.text} días")
+        painter.draw_text(800, 7400, f"VACACIONES: ")
+        painter.draw_text(800, 7700, f"Días de vacaciones merecidos:              {self.dias_total_vacaciones_label.text} días")
+        painter.draw_text(5500, 7700, f"Días de vacaciones disfrutados:              {self.dias_usados_vacaciones_input.text} días")
+        painter.draw_text(800, 8000, f"Días pendientes de pago por vacaciones:                      {self.dias_pendientes_vacaciones_label.text} días")
+        painter.draw_text(1000, 8500, "CONCEPTOS A DESCONTAR: ")
+        painter.draw_text(800, 8800, f"Aporte a Salud:                                           4 % sobre salario y auxilio de transporte")
+        painter.draw_text(800, 9100, f"Aporte a Pensión:                                       4 % sobre salario y auxilio de transporte")
+        painter.draw_text(800, 9400, "Prestamos o anticipos a descontar:             $ {:,.2f}".format(self.descuento_prestamo))
+        painter.draw_text(0, 9600, "_____________________________________________________________________________________________________________________________________________________________")
+        painter.draw_text(1000, 9900, "DETALLE DE CONCEPTOS LIQUIDADOS: ")
+        painter.draw_text(5000, 10200, "DEVENGADO")
+        painter.draw_text(8000, 10200, "DEDUCIDO")
+        painter.draw_text(500, 10500, f"Salario:")
+        painter.draw_text(5000, 10500, "$  {:,.2f}" .format(self.valor_ultimo_salario_a_pagar))
+        painter.draw_text(500, 10800, f"Auxilio de transporte:")
+        painter.draw_text(5000, 10800, "$  {:,.2f}" .format(self.valor_ultimo_auxilio_a_pagar))
+        painter.draw_text(500, 11100, f"Horas extras (25% adicional a la hora de trabajo ordinaria):")
+        painter.draw_text(5000, 11100, "$  {:,.2f}" .format(self.valor_extras_a_pagar))
+        painter.draw_text(500, 11400, f"Prima legal:")
+        painter.draw_text(5000, 11400, "$  {:,.2f}" .format(self.valor_prima_a_pagar))
+        painter.draw_text(500, 11700, f"Cesantias:")
+        painter.draw_text(5000, 11700, "$  {:,.2f}" .format(self.valor_cesantias_a_pagar))
+        painter.draw_text(500, 12000, f"Intereses de cesantias (12% de interes sobre las cesantias):")
+        painter.draw_text(5000, 12000, "$  {:,.2f}" .format(self.valor_intereses_cesantias_a_pagar))
+        painter.draw_text(500, 12300, f"Vacaciones:")
+        painter.draw_text(5000, 12300, "$  {:,.2f}" .format(self.valor_vacaciones_a_pagar))
+        painter.draw_text(500, 12600, f"Aporte a Salud:")
+        painter.draw_text(8000, 12600, "$  {:,.2f}" .format(self.descuento_salud))
+        painter.draw_text(500, 12900, f"Aporte a Pensión:")
+        painter.draw_text(8000, 12900, "$  {:,.2f}" .format(self.descuento_pension))
+        painter.draw_text(500, 13200, f"Descuento prestamo / anticipo:")
+        painter.draw_text(8000, 13200, "$  {:,.2f}" .format(self.descuento_prestamo))
+        painter.draw_text(500, 13700, "SUBTOTALES:")
+        painter.draw_text(5000, 13700, "$  {:,.2f}" .format(self.subtotal_a_pagar))
+        painter.draw_text(8000, 13700, "$  {:,.2f}" .format(self.subtotal_descuentos))
+        painter.draw_text(500, 14200, "TOTAL A PAGAR:")
+        painter.draw_text(3000, 14200, "$  {:,.2f}" .format(self.total_liquidacion))
         #painter.window().width()//2,
         #painter.window().height()//2,
         painter.end()
+        
         self.setup_information()
 
     def setup_information(self):
@@ -478,33 +499,6 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
 
     
 
-    
-
-
-    
-
-
-
-
-
-    
-        
-
-
-
-
-
-
-
-
-        
-        
-        
-
-
-
-
-
 # Ejecutar la aplicacion Qt
 import sys # se importa la libreria sys
 app = QApplication(sys.argv)
@@ -512,10 +506,6 @@ app = QApplication(sys.argv)
 window = Liquidacion_empleados() # se hace el llamado a la clase
 window.setup_ui() # se aplica el tamano definido
 window.show() # se muestra
-
-
-
-
 
 
 # Cerrar la aplicacion Qt

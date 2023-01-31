@@ -14,6 +14,8 @@ from styles import estilos_menu # Se hace el llamado de la hoja de estilos como 
 class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana para heredar
     
     def setup_ui(self): #Se crea el metodo de la VENTANA como tal
+        self.show_maximized()
+        #self.show_normal()
         self.size = QSize(1500, 900) # define el tamano de la ventana
         self.set_window_title("Liquidacion de empleados")
 

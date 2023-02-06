@@ -14,10 +14,18 @@ from styles import estilos_menu # Se hace el llamado de la hoja de estilos como 
 class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana para heredar
     
     def setup_ui(self): #Se crea el metodo de la VENTANA como tal
-        self.show_maximized()
-        #self.show_normal()
+        os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
+        #self.show_maximized()
+        self.show_normal()
         self.size = QSize(1500, 900) # define el tamano de la ventana
         self.set_window_title("Liquidacion de empleados")
+
+        
+        self.scroll = QScrollArea()
+        self.scroll.set_vertical_scroll_bar_policy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        self.scroll.set_horizontal_scroll_bar_policy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        
+
 
         self.root_layout = QVBoxLayout()
 
@@ -504,10 +512,14 @@ class Liquidacion_empleados(QMainWindow): #Se crea una clase para la ventana par
 # Ejecutar la aplicacion Qt
 import sys # se importa la libreria sys
 app = QApplication(sys.argv)
+app.set_attribute(Qt.AA_EnableHighDpiScaling)
+os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
 
 window = Liquidacion_empleados() # se hace el llamado a la clase
 window.setup_ui() # se aplica el tamano definido
 window.show() # se muestra
+
+
 
 
 # Cerrar la aplicacion Qt
